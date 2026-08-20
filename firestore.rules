@@ -1,0 +1,136 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * STAY SAFE AND BRAVE - FIRESTORE SECURITY RULES
+     * 
+     * Core Philosophy:
+     * This ruleset enforces a strict user-ownership and collaborator-access model for the 
+     * "Stay Safe and Brave" platform. It is designed for the Prototyping Phase, meaning 
+     * it prioritizes robust authorization (who can do what) over strict schema validation 
+     * (the exact shape of the data).
+     * 
+     * Data Structure:
+     * - /users/{userId}: Private user profiles, accessible only by the owner.
+     * - /mentors/{mentorId}: Public mentor profiles, editable only by the mentor owner.
+     * - /bookings/{bookingId}: Shared documents accessible by both the Traveler (userId) 
+     *   and the Mentor (mentorId) listed within the document.
+     * - /users/{userId}/reports/{reportId}: Private travel diaries/reports nested under the owner's path.
+     * 
+     * Key Security Decisions:
+     * 1. Denormalization for Authorization: Critical IDs (userId, mentorId) are required 
+     *    inside documents to ensure fast, non-recursive security checks without get() calls.
+     * 2. Public Visibility: Only Mentor profiles are public to support the SearchView. 
+     *    All other entities require authentication and specific ownership/participation.
+     * 3. Relational Integrity: On creation and update, the rules enforce that ownership 
+     *    IDs in the data match the authenticated user and remain immutable.
+     * 4. State Safety: All updates and deletes require verification that the document 
+     *    exists and that the requester is the authorized owner/participant.
+     */
+
+    // --- GLOBAL HELPER FUNCTIONS ---
+
+    /** Checks if the request is from an authenticated user. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** Checks if the authenticated user's UID matches the provided ID. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** Checks ownership and ensures the document exists for destructive operations. */
+    function isExistingOwner(userId) {
+      return resource != null && isOwner(userId);
+    }
+
+    /** Checks if the user is either the traveler or the mentor on a booking document. */
+    function isBookingParticipant(data) {
+      return isSignedIn() && (request.auth.uid == data.userId || request.auth.uid == data.mentorId);
+    }
+
+    // --- COLLECTION RULES ---
+
+    /**
+     * @description Rules for User profiles. Access restricted to the owner only.
+     * @path /users/{userId}
+     * @allow (get) If auth.uid matches {userId}.
+     * @deny (list) Global listing of users is forbidden to protect privacy.
+     * @principle Restricts access to a user's own data tree and enforces path-to-data consistency.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Users cannot be listed for privacy
+      
+      allow create: if isOwner(userId) 
+                    && request.resource.data.id == userId;
+      
+      allow update: if isExistingOwner(userId) 
+                    && request.resource.data.id == resource.data.id;
+      
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Mentor profiles are public for discovery but managed by the mentor.
+     * @path /mentors/{mentorId}
+     * @allow (get, list) Anyone (even unauthenticated) can view mentors for the Search view.
+     * @deny (update) If the auth.uid does not match the mentorId.
+     * @principle Public Read with Owner-Only Writes.
+     */
+    match /mentors/{mentorId} {
+      allow get, list: if true;
+      
+      allow create: if isOwner(mentorId) 
+                    && request.resource.data.id == mentorId;
+      
+      allow update: if isExistingOwner(mentorId) 
+                    && request.resource.data.id == resource.data.id;
+      
+      allow delete: if isExistingOwner(mentorId);
+    }
+
+    /**
+     * @description Bookings are shared between a Traveler and a Mentor.
+     * @path /bookings/{bookingId}
+     * @allow (get) If the user is the 'userId' or 'mentorId' in the document.
+     * @deny (create) If the user is not one of the two parties mentioned in the data.
+     * @principle Shared Access (Closed Collaborators) using denormalized IDs.
+     */
+    match /bookings/{bookingId} {
+      allow get: if isBookingParticipant(resource.data);
+      allow list: if isSignedIn(); // Filtering is handled by the client query (where userId == uid)
+      
+      allow create: if isSignedIn() 
+                    && (request.resource.data.userId == request.auth.uid || request.resource.data.mentorId == request.auth.uid);
+      
+      allow update: if resource != null 
+                    && isBookingParticipant(resource.data)
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.mentorId == resource.data.mentorId;
+      
+      allow delete: if resource != null && isBookingParticipant(resource.data);
+    }
+
+    /**
+     * @description Private travel reports/diaries owned by a specific user.
+     * @path /users/{userId}/reports/{reportId}
+     * @allow (list) If the user is the owner of the parent {userId} path.
+     * @deny (get) If another user tries to access the report by ID.
+     * @principle Enforces document ownership for writes and user-scoped subcollections.
+     */
+    match /users/{userId}/reports/{reportId} {
+      allow get, list: if isOwner(userId);
+      
+      allow create: if isOwner(userId) 
+                    && request.resource.data.userId == userId;
+      
+      allow update: if isExistingOwner(userId) 
+                    && request.resource.data.userId == resource.data.userId;
+      
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "general": {
+    "contactHeader": {
+      "src": "https://picsum.photos/seed/contact-new/1200/400",
+      "dataAiHint": "travel contact"
+    },
+    "pricingHeader": {
+      "src": "https://picsum.photos/seed/pricing-new/1200/400",
+      "dataAiHint": "adventure planning"
+    },
+    "safetyHeader": {
+      "src": "https://picsum.photos/seed/safety-new/1200/400",
+      "dataAiHint": "trust safety"
+    },
+    "aboutUsHero": {
+      "src": "https://picsum.photos/seed/about-hero-new/1920/1080",
+      "dataAiHint": "South Africa landscape"
+    },
+    "aboutUsCollaboration": {
+      "src": "https://picsum.photos/seed/teamwork-new/600/450",
+      "dataAiHint": "team collaboration"
+    }
+  },
+  "avatars": {
+    "womanSmiling": {
+      "src": "https://picsum.photos/seed/avatar-w1/100/100",
+      "dataAiHint": "woman smiling"
+    },
+    "manGuide": {
+      "src": "https://picsum.photos/seed/avatar-m1/100/100",
+      "dataAiHint": "man guide"
+    },
+    "personSmiling": {
+      "src": "https://picsum.photos/seed/person-smiling-new/128/128",
+      "dataAiHint": "traveler portrait"
+    },
+    "logoIcon": {
+      "src": "https://picsum.photos/seed/brand-icon/100/100",
+      "dataAiHint": "logo icon"
+    },
+    "womanTraveler": {
+      "src": "https://picsum.photos/seed/traveler-w1/100/100",
+      "dataAiHint": "woman traveler"
+    },
+    "soloFemaleTraveler": {
+      "src": "https://picsum.photos/seed/traveler-w2/100/100",
+      "dataAiHint": "female traveler"
+    },
+    "womanReview": {
+      "src": "https://picsum.photos/seed/reviewer-w1/100/100",
+      "dataAiHint": "woman portrait"
+    }
+  },
+  "mentors": {
+    "aisha": {
+      "src": "https://picsum.photos/seed/mentor-aisha/400/400",
+      "dataAiHint": "smiling guide"
+    },
+    "bongani": {
+      "src": "https://picsum.photos/seed/mentor-bongani/400/400",
+      "dataAiHint": "male guide"
+    },
+    "sarah": {
+      "src": "https://picsum.photos/seed/mentor-sarah/400/400",
+      "dataAiHint": "city guide"
+    },
+    "david": {
+      "src": "https://picsum.photos/seed/mentor-david/400/400",
+      "dataAiHint": "nature guide"
+    },
+    "naledi": {
+      "src": "https://picsum.photos/seed/mentor-naledi/400/400",
+      "dataAiHint": "safari guide"
+    },
+    "pieter": {
+      "src": "https://picsum.photos/seed/mentor-pieter/400/400",
+      "dataAiHint": "man portrait"
+    }
+  },
+  "locations": {
+    "capeTown": {
+      "src": "https://picsum.photos/seed/location-ct/600/400",
+      "dataAiHint": "Cape Town"
+    },
+    "johannesburg": {
+      "src": "https://picsum.photos/seed/location-jhb/600/400",
+      "dataAiHint": "Johannesburg art"
+    },
+    "durban": {
+      "src": "https://picsum.photos/seed/location-dbn/600/400",
+      "dataAiHint": "Durban beach"
+    }
+  },
+  "reports": {
+    "capeTownReport": {
+      "src": "https://picsum.photos/seed/report-ct/600/400",
+      "dataAiHint": "Cape Town"
+    },
+    "krugerReport": {
+      "src": "https://picsum.photos/seed/report-kruger/600/400",
+      "dataAiHint": "safari wildlife"
+    },
+    "durbanReport": {
+      "src": "https://picsum.photos/seed/report-dbn/600/400",
+      "dataAiHint": "Durban coast"
+    }
+  },
+  "team": {
+    "houssam": {
+      "src": "https://picsum.photos/seed/team-houssam/300/300",
+      "dataAiHint": "man tech"
+    },
+    "laura": {
+      "src": "https://picsum.photos/seed/team-laura/300/300",
+      "dataAiHint": "woman leader"
+    },
+    "niklas": {
+      "src": "https://picsum.photos/seed/team-niklas/300/300",
+      "dataAiHint": "man business"
+    }
+  },
+  "home": {
+    "hero": {
+      "src": "https://picsum.photos/seed/hero-new/1600/900",
+      "dataAiHint": "woman safari"
+    },
+    "paypal": {
+      "src": "https://picsum.photos/seed/paypal-logo/300/100",
+      "dataAiHint": "paypal logo"
+    }
+  }
+}

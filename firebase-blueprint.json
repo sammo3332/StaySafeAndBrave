@@ -1,0 +1,346 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a traveler using the Stay Safe and Brave platform, capable of booking mentors and creating travel reports.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the traveler."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the traveler."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the traveler. Used for communication.",
+          "format": "email"
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL to the traveler's profile picture.",
+          "format": "uri"
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short biography or introduction about the traveler."
+        },
+        "homeCountry": {
+          "type": "string",
+          "description": "The traveler's home country."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the user account was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the user account was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Mentor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Mentor",
+      "type": "object",
+      "description": "Represents a local guide in South Africa, offering services to travelers.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Mentor entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the mentor."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the mentor."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the mentor for communication.",
+          "format": "email"
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL to the mentor's profile picture.",
+          "format": "uri"
+        },
+        "bio": {
+          "type": "string",
+          "description": "A detailed biography outlining the mentor's background and interests."
+        },
+        "location": {
+          "type": "string",
+          "description": "The primary location (e.g., city or region) in South Africa where the mentor operates."
+        },
+        "languages": {
+          "type": "array",
+          "description": "A list of languages the mentor is fluent in.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "areasOfExpertise": {
+          "type": "array",
+          "description": "A list of specialized areas or activities the mentor can guide (e.g., hiking, cultural tours, wildlife).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "qualifications": {
+          "type": "string",
+          "description": "Any relevant certifications, licenses, or professional qualifications of the mentor."
+        },
+        "dailyRate": {
+          "type": "number",
+          "description": "The mentor's standard daily service rate in local currency (e.g., ZAR)."
+        },
+        "averageRating": {
+          "type": "number",
+          "description": "The average rating received by the mentor from past bookings (on a scale of 0 to 5)."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the mentor profile was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the mentor profile was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "bio",
+        "location",
+        "languages",
+        "areasOfExpertise",
+        "dailyRate",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Booking": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Booking",
+      "type": "object",
+      "description": "Represents a confirmed or pending booking of a mentor by a traveler.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Booking entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who made the booking. (Relationship: User 1:N Booking)"
+        },
+        "mentorId": {
+          "type": "string",
+          "description": "Reference to the Mentor being booked. (Relationship: Mentor 1:N Booking)"
+        },
+        "bookingDate": {
+          "type": "string",
+          "description": "The date and time for which the mentor is booked.",
+          "format": "date-time"
+        },
+        "durationHours": {
+          "type": "number",
+          "description": "The planned duration of the booking in hours."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the booking (e.g., 'pending', 'confirmed', 'completed', 'cancelled')."
+        },
+        "totalPrice": {
+          "type": "number",
+          "description": "The total price charged for this booking."
+        },
+        "paymentIntentId": {
+          "type": "string",
+          "description": "Identifier for the Stripe Payment Intent associated with this booking."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Any additional notes or specific requests for the booking."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the booking was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the booking was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "mentorId",
+        "bookingDate",
+        "durationHours",
+        "status",
+        "totalPrice",
+        "paymentIntentId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Report": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Report",
+      "type": "object",
+      "description": "Represents a travel report or diary entry created by a traveler.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Report entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who authored the report. (Relationship: User 1:N Report)"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the travel report."
+        },
+        "content": {
+          "type": "string",
+          "description": "The main body content of the travel report."
+        },
+        "location": {
+          "type": "string",
+          "description": "The geographical location or region the report is about."
+        },
+        "imageUrls": {
+          "type": "array",
+          "description": "An array of URLs to images associated with the travel report.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the travel report was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the travel report was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "title",
+        "content",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores individual user profiles. Only the user with ID matching `userId` can read/write their own profile. Authorization relies on `request.auth.uid` matching the path's `userId`.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user, corresponding to `request.auth.uid`."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/mentors/{mentorId}",
+        "definition": {
+          "entityName": "Mentor",
+          "schema": {
+            "$ref": "#/backend/entities/Mentor"
+          },
+          "description": "Stores mentor profiles. Documents in this collection are publicly readable for discovery (e.g., SearchView). Only the mentor with ID matching `mentorId` can modify their own profile. Authorization for writes relies on `request.auth.uid` matching the path's `mentorId`.",
+          "params": [
+            {
+              "name": "mentorId",
+              "description": "The unique identifier of the mentor, corresponding to `request.auth.uid` for profile owners."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/bookings/{bookingId}",
+        "definition": {
+          "entityName": "Booking",
+          "schema": {
+            "$ref": "#/backend/entities/Booking"
+          },
+          "description": "Stores details for each booking transaction. Includes denormalized 'userId' and 'mentorId' for authorization independence. Accessible by either the booking's `userId` or `mentorId` (both stored within the document). Supports QAPs by allowing authenticated users to list bookings where their UID matches either 'userId' or 'mentorId'.",
+          "params": [
+            {
+              "name": "bookingId",
+              "description": "The unique identifier for the booking."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/reports/{reportId}",
+        "definition": {
+          "entityName": "Report",
+          "schema": {
+            "$ref": "#/backend/entities/Report"
+          },
+          "description": "Stores travel reports authored by a specific user. Includes denormalized 'userId' for authorization independence. Only the user (whose ID matches `userId` in the path and `resource.data.userId`) can read/write their own reports. This structure simplifies ownership-based security rules and supports efficient 'list' operations for the owning user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user who authored the report, corresponding to `request.auth.uid`."
+            },
+            {
+              "name": "reportId",
+              "description": "The unique identifier for the specific travel report."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The recommended Firestore structure for 'Stay Safe and Brave' prioritizes security, scalability, and debuggability, strictly adhering to the core design principles and strategic mandates. While the user's prompt indicated Supabase for PostgreSQL as the primary data store, this design provides a robust Firestore-native implementation for the specified entities, assuming a scenario where these entities would reside in Firestore, perhaps for specific real-time features or as a complementary data store.\n\n**Authorization Independence (CRITICAL):** This structure explicitly avoids `get()` calls in security rules to prevent broken atomic operations and simplify debugging. For entities like `Report` which are owned by a `User`, the `userId` is embedded directly into the document and also forms part of the hierarchical path (`/users/{userId}/reports/{reportId}`). This allows security rules to check `request.auth.uid == userId` from the path and `resource.data.userId` from the document without needing cross-document reads. For `Booking` documents, both `userId` and `mentorId` are denormalized directly within the `Booking` document, enabling direct checks like `request.auth.uid == resource.data.userId || request.auth.uid == resource.data.mentorId`.\n\n**QAPs (Queries Are Not Filters):** The structure is designed to enable secure and efficient `list` operations:\n\n*   **Mentors:** The `/mentors` collection is designed for public readability, supporting `list` operations for the `SearchView`. Security rules will allow unauthenticated reads. Specific `where` clauses for filtering (e.g., by `location`, `languages`, `areasOfExpertise`) can be applied by the client, and the rules will ensure all returned documents are publicly viewable.\n*   **Users:** The `/users/{userId}` path ensures that users can only access their own profile by matching `request.auth.uid` with the `userId` wildcard. Listing other user profiles (beyond what's necessary for a booking, for example) is not directly supported by `list` on `/users` for security reasons, aligning with the principle of private user data.\n*   **Bookings:** The top-level `/bookings` collection, combined with denormalized `userId` and `mentorId` fields, allows efficient `list` operations for both parties involved. A user can query `bookings` where `userId == request.auth.uid` to see their own bookings. A mentor can query `bookings` where `mentorId == request.auth.uid` to see their booked sessions. Security rules enforce that `request.auth.uid` must match either the `userId` or `mentorId` in any accessed `Booking` document, satisfying QAPs for both the user's `BookingView` and a mentor's equivalent.\n*   **Reports:** The `/users/{userId}/reports/{reportId}` subcollection ensures that a user can `list` all their own reports by querying `/users/{request.auth.uid}/reports`. The `userId` in the path acts as a natural filter, and rules confirm ownership, making it a secure and efficient `list` operation for the `DiaryView`.\n\n**Structural Segregation:** All documents within a given collection (`/mentors`, `/bookings`) or subcollection (`/users/{userId}/reports`) share the same security posture, simplifying security rules. For example, `Mentor` profiles are publicly readable, while `Report` entries are private to the user who created them (unless a future feature requires public sharing, which would necessitate a `status` field and adjusted rules or a separate public collection).\n\n**Access Modeling & Predictability:** Path-based ownership (`/users/{userId}`, `/users/{userId}/reports/{reportId}`) is used for private, user-owned data. For collaborative data like `Bookings`, a top-level collection with explicit `userId` and `mentorId` fields provides clear, auditable access control. Wildcards are descriptive (`{userId}`, `{mentorId}`, `{bookingId}`, `{reportId}`). The `Booking` entity uses an explicit `status` field for clear state management."
+  }
+}
