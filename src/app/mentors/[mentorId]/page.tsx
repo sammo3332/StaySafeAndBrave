@@ -42,7 +42,7 @@ export default function MentorDetailPage({ params }: PageProps) {
     return doc(db, 'mentors', mentorId);
   }, [db, mentorId]);
 
-  const { data: mentor, isLoading } = useDoc<MentorDTO>(mentorRef);
+  const { data: mentor, isLoading, error } = useDoc<MentorDTO>(mentorRef);
 
   // Loading state
   if (isLoading) {
@@ -56,17 +56,46 @@ export default function MentorDetailPage({ params }: PageProps) {
     );
   }
 
-  // Not found state
-  if (!mentor) {
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-16 max-w-2xl">
+        <Card className="border border-destructive/40 p-8 text-center space-y-6 shadow-sm bg-destructive/5">
+          <div className="w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center mx-auto text-destructive">
+            <AlertCircle className="w-7 h-7" aria-hidden="true" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Fehler beim Laden des Profils
+            </h1>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Das Mentorenprofil konnte leider nicht aus der Datenbank geladen werden. Bitte versuche es später noch einmal.
+            </p>
+          </div>
+          <div>
+            <Button asChild variant="outline">
+              <Link href="/mentors">
+                <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
+                Zurück zur Mentoren-Übersicht
+              </Link>
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Not found or inactive state
+  if (!mentor || mentor.active === false) {
     return (
       <div className="container mx-auto px-4 py-16 max-w-2xl">
         <Card className="border border-border/80 p-8 text-center space-y-6 shadow-sm">
           <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground">
-            <AlertCircle className="w-7 h-7 text-destructive" aria-hidden="true" />
+            <AlertCircle className="w-7 h-7 text-muted-foreground" aria-hidden="true" />
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Mentor nicht gefunden
+              Mentor nicht verfügbar
             </h1>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Das gesuchte Profil existiert nicht, ist momentan nicht aktiv oder die URL ist ungültig.
@@ -326,61 +355,33 @@ export default function MentorDetailPage({ params }: PageProps) {
                 </CardTitle>
               </div>
               <CardDescription className="text-sm text-muted-foreground leading-relaxed mt-1">
-                Wähle im nächsten Schritt das Begleitpaket, das am besten zu deinem Reiseplan
-                und deinen individuellen Bedürfnissen passt. Jedes Paket baut auf der persönlichen
-                menschlichen Unterstützung durch {mentor.firstName || 'deinen Mentor'} auf.
+                Wähle im nächsten Produktschritt ein Begleitpaket für deine Reise.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Canonical Package: Basis */}
-                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2.5 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg text-primary">Basis</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-1">
-                      Grundlegende Unterstützung, Orientierung und wichtige Vorab-Tipps für die Planung deiner Reise.
-                    </p>
-                  </div>
-                  <div className="pt-2">
-                    <span className="inline-block text-xs font-medium text-secondary">
-                      Für selbstständige Planer
-                    </span>
-                  </div>
+                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
+                  <h3 className="font-semibold text-lg text-primary">Basis</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    Die konkreten Leistungen und Preise dieses Pakets werden im nächsten Produktschritt finalisiert.
+                  </p>
                 </div>
 
                 {/* Canonical Package: Standard */}
-                <div className="rounded-xl border-2 border-primary/50 bg-card p-5 space-y-2.5 flex flex-col justify-between shadow-sm relative">
-                  <div>
-                    <div className="flex items-center justify-between gap-1">
-                      <h3 className="font-semibold text-lg text-primary">Standard</h3>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                        Empfohlen
-                      </span>
-                    </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-1">
-                      Umfassendere persönliche Begleitung mit direkter Erreichbarkeit und flexiblen lokalen Empfehlungen.
-                    </p>
-                  </div>
-                  <div className="pt-2">
-                    <span className="inline-block text-xs font-medium text-secondary">
-                      Ausgewogene Sicherheit &amp; Freiheit
-                    </span>
-                  </div>
+                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
+                  <h3 className="font-semibold text-lg text-primary">Standard</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    Die konkreten Leistungen und Preise dieses Pakets werden im nächsten Produktschritt finalisiert.
+                  </p>
                 </div>
 
                 {/* Canonical Package: Premium */}
-                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2.5 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-semibold text-lg text-primary">Premium</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-1">
-                      Intensive persönliche Betreuung vor Ort, maximale Flexibilität und erweiterter Support während deines gesamten Aufenthalts.
-                    </p>
-                  </div>
-                  <div className="pt-2">
-                    <span className="inline-block text-xs font-medium text-secondary">
-                      Maximaler Komfort &amp; Schutz
-                    </span>
-                  </div>
+                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
+                  <h3 className="font-semibold text-lg text-primary">Premium</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    Die konkreten Leistungen und Preise dieses Pakets werden im nächsten Produktschritt finalisiert.
+                  </p>
                 </div>
               </div>
 
@@ -388,10 +389,10 @@ export default function MentorDetailPage({ params }: PageProps) {
               <div className="rounded-xl bg-card border border-border/60 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="space-y-1 text-center sm:text-left">
                   <h4 className="font-semibold text-base text-foreground">
-                    Bereit für deine Reise mit {mentor.firstName || 'deinem Mentor'}?
+                    Mit {mentor.firstName || 'diesem Mentor'} weitermachen?
                   </h4>
                   <p className="text-xs text-muted-foreground">
-                    Vergleiche im nächsten Schritt die genauen Konditionen und wähle dein Paket.
+                    Wähle dein Begleitpaket im nächsten Schritt aus.
                   </p>
                 </div>
                 <Button
