@@ -1,13 +1,18 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState, useContext, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CheckCircle, HeartHandshake, ShoppingCart, Check } from "lucide-react";
+import { CheckCircle, HeartHandshake, ShoppingCart, Check, User, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
 import { CartContext, type PricingTier } from "@/context/CartContext";
 import images from "@/lib/placeholder-images.json";
+import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
+import { doc } from "firebase/firestore";
+import type { MentorDTO } from "@/lib/dtos";
 
 const pricingTiers: PricingTier[] = [
   {
@@ -63,8 +68,18 @@ const pricingTiers: PricingTier[] = [
   },
 ];
 
-export default function PaketePreisePage() {
+function PaketePreiseContent() {
   const { cart, addToCart } = useContext(CartContext);
+  const searchParams = useSearchParams();
+  const mentorId = searchParams.get("mentor");
+
+  const db = useFirestore();
+  const mentorRef = useMemoFirebase(() => {
+    if (!db || !mentorId) return null;
+    return doc(db, "mentors", mentorId);
+  }, [db, mentorId]);
+
+  const { data: mentor } = useDoc<MentorDTO>(mentorRef);
 
   const handleAddToCart = (tier: PricingTier) => {
     addToCart(tier);
@@ -73,6 +88,10 @@ export default function PaketePreisePage() {
       description: `"${tier.name}" wurde in deinen Warenkorb gelegt.`,
     });
   };
+
+  const mentorFullName = mentor
+    ? `${mentor.firstName || ""} ${mentor.lastName || ""}`.trim()
+    : null;
 
   return (
     <>
@@ -86,11 +105,51 @@ export default function PaketePreisePage() {
           className="w-full h-auto object-cover shadow-lg"
         />
       </section>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 pb-12">
         <div className="space-y-12">
+          {/* Carried Mentor Context Banner */}
+          {mentorId && (
+            <div className="max-w-4xl mx-auto rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                {mentor?.profilePictureUrl ? (
+                  <Image
+                    src={mentor.profilePictureUrl}
+                    alt={mentorFullName || "Mentor Porträt"}
+                    width={52}
+                    height={52}
+                    className="w-13 h-13 rounded-full object-cover border-2 border-primary/40 shrink-0"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                    <User className="w-6 h-6" aria-hidden="true" />
+                  </div>
+                )}
+                <div>
+                  <div className="text-xs uppercase tracking-wider font-semibold text-primary">
+                    Ausgewählter Begleiter für deine Reise
+                  </div>
+                  <div className="text-base font-bold text-foreground">
+                    {mentorFullName || "Lokaler Mentor"}
+                    {mentor?.location && (
+                      <span className="font-normal text-muted-foreground text-sm ml-2">
+                        • {mentor.location}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button asChild variant="outline" size="sm" className="shrink-0">
+                <Link href="/mentors">
+                  <ArrowLeft className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
+                  Anderen Mentor wählen
+                </Link>
+              </Button>
+            </div>
+          )}
+
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-              Unsere Pakete & Preise
+              Unsere Pakete &amp; Preise
             </h1>
             <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
               Wähle das Paket, das am besten zu deinem Abenteuer in Südafrika passt. Alle Touren werden von unseren geprüften lokalen Mentoren durchgeführt, um dir ein sicheres und authentisches Erlebnis zu garantieren.
@@ -154,11 +213,11 @@ export default function PaketePreisePage() {
             <CardHeader>
               <CardTitle className="text-2xl text-primary flex items-center gap-2">
                 <HeartHandshake className="w-7 h-7" />
-                Immer Inklusive: Sicherheit & lokale Expertise
+                Immer Inklusive: Sicherheit &amp; lokale Expertise
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-muted-foreground">
-              <p>Bei "Stay Safe and Brave" steht deine Sicherheit an erster Stelle. Jede Tour beinhaltet:</p>
+              <p>Bei &quot;Stay Safe and Brave&quot; steht deine Sicherheit an erster Stelle. Jede Tour beinhaltet:</p>
               <ul className="list-disc list-inside space-y-1">
                 <li>Ausführliche Sicherheitseinweisung vor Tourbeginn.</li>
                 <li>Begleitung durch einen geprüften, ortskundigen Mentor.</li>
@@ -173,3 +232,12 @@ export default function PaketePreisePage() {
     </>
   );
 }
+
+export default function PaketePreisePage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto p-12 text-center text-muted-foreground">Lade Pakete &amp; Preise...</div>}>
+      <PaketePreiseContent />
+    </Suspense>
+  );
+}
+

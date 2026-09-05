@@ -22,10 +22,18 @@ export interface MentorDTO {
   languages: string[];
   areasOfExpertise: string[];
   qualifications?: string;
-  dailyRate: number;
+  dailyRate?: number;
   averageRating?: number;
   createdAt: string;
   updatedAt: string;
+  travelStyles?: string[];
+  verificationStatus?: 'unverified' | 'pending' | 'verified' | 'suspended';
+  identityVerified?: boolean;
+  backgroundCheckVerified?: boolean;
+  profileApproved?: boolean;
+  verifiedAt?: string;
+  reviewCount?: number;
+  active?: boolean;
 }
 
 export interface BookingDTO {
