@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { MentorDTO } from '@/lib/dtos';
+import { getPackages } from '@/lib/packages';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -43,6 +44,7 @@ export default function MentorDetailPage({ params }: PageProps) {
   }, [db, mentorId]);
 
   const { data: mentor, isLoading, error } = useDoc<MentorDTO>(mentorRef);
+  const packages = getPackages();
 
   // Loading state
   if (isLoading) {
@@ -360,29 +362,14 @@ export default function MentorDetailPage({ params }: PageProps) {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Canonical Package: Basis */}
-                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
-                  <h3 className="font-semibold text-lg text-primary">Basis</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    Die konkreten Leistungen und Preise dieses Pakets werden im nächsten Produktschritt finalisiert.
-                  </p>
-                </div>
-
-                {/* Canonical Package: Standard */}
-                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
-                  <h3 className="font-semibold text-lg text-primary">Standard</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    Die konkreten Leistungen und Preise dieses Pakets werden im nächsten Produktschritt finalisiert.
-                  </p>
-                </div>
-
-                {/* Canonical Package: Premium */}
-                <div className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
-                  <h3 className="font-semibold text-lg text-primary">Premium</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    Die konkreten Leistungen und Preise dieses Pakets werden im nächsten Produktschritt finalisiert.
-                  </p>
-                </div>
+                {packages.map((pkg) => (
+                  <div key={pkg.id} className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
+                    <h3 className="font-semibold text-lg text-primary">{pkg.name}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                      {pkg.description || pkg.shortDescription}
+                    </p>
+                  </div>
+                ))}
               </div>
 
               {/* Bottom CTA Block */}
