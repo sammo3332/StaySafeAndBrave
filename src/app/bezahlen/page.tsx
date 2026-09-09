@@ -36,7 +36,7 @@ export default function BezahlenPage() {
                 </CardTitle>
               </div>
               <CardDescription className="text-base text-muted-foreground leading-relaxed pt-2">
-                Der verbindliche Buchungs- und Zahlungsprozess wird derzeit vorbereitet. Sobald Leistungen, Preise und Verfügbarkeit final abgestimmt sind, kannst du dein Paket hier sicher buchen und bezahlen.
+                Die technische Zahlungsanbindung wird vorbereitet. Die Zahlung wird freigeschaltet, sobald Preis und Buchung verbindlich bestätigt sind.
               </CardDescription>
             </CardHeader>
 
