@@ -127,5 +127,68 @@ service cloud.firestore {
       
       allow delete: if isExistingOwner(userId);
     }
+
+    /**
+     * @description Real 1:1 conversations between a traveler and their local mentor, tied to a booking.
+     * @path /conversations/{conversationId}
+     * INVARIANT: conversationId === bookingId (deterministic 1:1 mapping per booking).
+     * NOTE: Mentor authorization will be added only after a real mentor Firebase Auth UID mapping exists.
+     * Currently, mentorId is stored as a reference to the mentor profile document, not an Auth UID.
+     * @allow (get, list) Only the authorized traveler (owner of the booking) may read.
+     * @allow (create) Authenticated traveler whose uid matches travelerId with valid bookingId and mentorId verified from booking.
+     * @allow (update) Traveler can update message metadata; ownership fields (travelerId, mentorId, bookingId, createdAt) are immutable.
+     * @deny (delete) Denied.
+     */
+    match /conversations/{conversationId} {
+      allow get, list: if isSignedIn() && resource.data.travelerId == request.auth.uid;
+
+      allow create: if isSignedIn()
+                    && request.resource.data.travelerId == request.auth.uid
+                    && request.resource.data.bookingId == conversationId
+                    && exists(/databases/$(database)/documents/bookings/$(conversationId))
+                    && get(/databases/$(database)/documents/bookings/$(conversationId)).data.userId == request.auth.uid
+                    && request.resource.data.mentorId == get(/databases/$(database)/documents/bookings/$(conversationId)).data.mentorId;
+
+      allow update: if isSignedIn()
+                    && resource.data.travelerId == request.auth.uid
+                    && request.resource.data.travelerId == resource.data.travelerId
+                    && request.resource.data.mentorId == resource.data.mentorId
+                    && request.resource.data.bookingId == resource.data.bookingId
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                      'updatedAt',
+                      'lastMessageText',
+                      'lastMessageSenderId',
+                      'lastMessageCreatedAt'
+                    ])
+                    && request.resource.data.lastMessageSenderId == request.auth.uid
+                    && request.resource.data.lastMessageText is string
+                    && request.resource.data.lastMessageText.size() > 0
+                    && request.resource.data.lastMessageText.size() <= 2000;
+
+      allow delete: if false;
+
+      /**
+       * @description Messages within a conversation.
+       * @path /conversations/{conversationId}/messages/{messageId}
+       * @allow (get, list) Only the authorized traveler for now.
+       * @allow (create) Authenticated traveler; senderId must match auth.uid; validates parent conversation using getAfter() for atomic batch support.
+       * @deny (update, delete) Messages are immutable once written.
+       */
+      match /messages/{messageId} {
+        allow get, list: if isSignedIn() && (
+          get(/databases/$(database)/documents/conversations/$(conversationId)).data.travelerId == request.auth.uid
+        );
+
+        allow create: if isSignedIn()
+                      && request.resource.data.senderId == request.auth.uid
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 2000
+                      && getAfter(/databases/$(database)/documents/conversations/$(conversationId)).data.travelerId == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
   }
 }

@@ -71,3 +71,23 @@ export interface ReportDTO {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface ConversationDTO {
+  id: string;
+  bookingId: string;
+  travelerId: string;
+  mentorId: string;
+  mentorName?: string;
+  createdAt: string | Timestamp | FieldValue;
+  updatedAt: string | Timestamp | FieldValue;
+  lastMessageText?: string;
+  lastMessageSenderId?: string;
+  lastMessageCreatedAt?: string | Timestamp | FieldValue;
+}
+
+export interface MessageDTO {
+  id: string;
+  senderId: string;
+  text: string;
+  createdAt: string | Timestamp | FieldValue;
+}

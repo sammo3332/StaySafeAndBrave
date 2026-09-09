@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarCheck, CalendarX, PlusCircle, SlidersHorizontal, Loader2, MapPin } from "lucide-react";
+import { CalendarCheck, CalendarX, PlusCircle, SlidersHorizontal, Loader2, MapPin, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
@@ -174,6 +174,16 @@ export default function BookingsPage() {
                         <MapPin className="w-3.5 h-3.5" /> {mentor.location}
                       </p>
                     )}
+
+                    <div className="pt-2 border-t mt-3 flex justify-end">
+                      {/* INVARIANT: conversationId === bookingId (deterministic 1:1 conversation per booking) */}
+                      <Button asChild variant="outline" size="sm" className="text-primary hover:text-primary">
+                        <Link href={`/dashboard/messages/${booking.id}`}>
+                          <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
+                          Nachrichten öffnen
+                        </Link>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               );

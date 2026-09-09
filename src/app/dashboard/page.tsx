@@ -250,6 +250,16 @@ export default function DashboardPage() {
                         <MapPin className="w-3 h-3 shrink-0" /> {mentor.location}
                       </p>
                     )}
+
+                    <div className="pt-2 border-t mt-2 flex justify-end">
+                      {/* INVARIANT: conversationId === bookingId for 1:1 messaging per booking */}
+                      <Button asChild variant="ghost" size="sm" className="h-7 text-xs text-primary hover:text-primary">
+                        <Link href={`/dashboard/messages/${booking.id}`} className="flex items-center gap-1">
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          Nachrichten
+                        </Link>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               );
