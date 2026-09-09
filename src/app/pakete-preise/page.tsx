@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useContext } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -11,11 +11,14 @@ import images from "@/lib/placeholder-images.json";
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { doc } from "firebase/firestore";
 import type { MentorDTO } from "@/lib/dtos";
-import { getPackages } from "@/lib/packages";
+import { getPackages, type PackageDefinition } from "@/lib/packages";
+import { CartContext } from "@/context/CartContext";
 
 function PaketePreiseContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const mentorId = searchParams.get("mentor");
+  const { addToCart } = useContext(CartContext);
 
   const db = useFirestore();
   const mentorRef = useMemoFirebase(() => {
@@ -29,6 +32,18 @@ function PaketePreiseContent() {
   const mentorFullName = mentor
     ? `${mentor.firstName || ""} ${mentor.lastName || ""}`.trim()
     : null;
+
+  const handleSelectPackage = (pkg: PackageDefinition) => {
+    addToCart({
+      packageId: pkg.id,
+      packageName: pkg.name,
+      mentorId: mentorId || undefined,
+      mentorName: mentorFullName || undefined,
+      priceAmount: pkg.priceAmount,
+      priceLabel: pkg.priceLabel || "Preis in Abstimmung",
+    });
+    router.push("/warenkorb");
+  };
 
   return (
     <>
@@ -123,10 +138,10 @@ function PaketePreiseContent() {
                 <CardFooter className="pt-2 pb-6">
                   <Button
                     size="lg"
-                    className="w-full bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed font-medium shadow-none border border-border/60"
-                    disabled
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                    onClick={() => handleSelectPackage(pkg)}
                   >
-                    Paket in Abstimmung
+                    Paket auswählen
                   </Button>
                 </CardFooter>
               </Card>

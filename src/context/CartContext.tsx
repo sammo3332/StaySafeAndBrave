@@ -2,23 +2,20 @@
 'use client';
 
 import React, { createContext, useState, ReactNode } from 'react';
+import type { PackageId } from '@/lib/packages';
 
-// Typdefinition für ein Preis-Tier, die in der Preisseite wiederverwendet wird
-export interface PricingTier {
-  name: string;
-  id: string;
-  price: string;
-  priceAmount: number;
-  priceSuffix: string;
-  description: string;
-  features: string[];
-  cta: string;
-  mostPopular: boolean;
+export interface CartItem {
+  packageId: PackageId;
+  packageName: string;
+  mentorId?: string;
+  mentorName?: string;
+  priceAmount?: number;
+  priceLabel?: string;
 }
 
 interface CartContextType {
-  cart: PricingTier | null;
-  addToCart: (item: PricingTier) => void;
+  cart: CartItem | null;
+  addToCart: (item: CartItem) => void;
   clearCart: () => void;
 }
 
@@ -29,9 +26,9 @@ export const CartContext = createContext<CartContextType>({
 });
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [cart, setCart] = useState<PricingTier | null>(null);
+  const [cart, setCart] = useState<CartItem | null>(null);
 
-  const addToCart = (item: PricingTier) => {
+  const addToCart = (item: CartItem) => {
     setCart(item);
   };
 
@@ -45,3 +42,4 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     </CartContext.Provider>
   );
 };
+
