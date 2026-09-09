@@ -51,7 +51,29 @@ service cloud.firestore {
       return isSignedIn() && (request.auth.uid == data.userId || request.auth.uid == data.mentorId);
     }
 
+    /** Checks if the authenticated user is the mentor linked via private /mentorAuth/{authUid} mapping. */
+    function isLinkedMentor(mentorId) {
+      return isSignedIn()
+        && mentorId is string
+        && exists(/databases/$(database)/documents/mentorAuth/$(request.auth.uid))
+        && get(/databases/$(database)/documents/mentorAuth/$(request.auth.uid)).data.mentorId == mentorId;
+    }
+
     // --- COLLECTION RULES ---
+
+    /**
+     * @description Private mapping between Firebase Auth UIDs and public mentor profile IDs.
+     * @path /mentorAuth/{authUid}
+     * INVARIANT: Document ID is the Firebase Auth UID. Contains { mentorId: string }.
+     * @allow (get) Only the authenticated user whose auth.uid matches {authUid} can read their own mapping.
+     * @deny (list) Listing is forbidden to prevent enumeration.
+     * @deny (create, update, delete) Clients cannot write mappings; provisioning is server/admin-only.
+     */
+    match /mentorAuth/{authUid} {
+      allow get: if isSignedIn() && request.auth.uid == authUid;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
 
     /**
      * @description Rules for User profiles. Access restricted to the owner only.
@@ -132,15 +154,16 @@ service cloud.firestore {
      * @description Real 1:1 conversations between a traveler and their local mentor, tied to a booking.
      * @path /conversations/{conversationId}
      * INVARIANT: conversationId === bookingId (deterministic 1:1 mapping per booking).
-     * NOTE: Mentor authorization will be added only after a real mentor Firebase Auth UID mapping exists.
-     * Currently, mentorId is stored as a reference to the mentor profile document, not an Auth UID.
-     * @allow (get, list) Only the authorized traveler (owner of the booking) may read.
+     * @allow (get, list) Authorized traveler or authenticated mentor linked to the conversation's mentorId via authUid.
      * @allow (create) Authenticated traveler whose uid matches travelerId with valid bookingId and mentorId verified from booking.
-     * @allow (update) Traveler can update message metadata; ownership fields (travelerId, mentorId, bookingId, createdAt) are immutable.
+     * @allow (update) Traveler or linked mentor can update message metadata; ownership fields (travelerId, mentorId, bookingId, createdAt) are immutable.
      * @deny (delete) Denied.
      */
     match /conversations/{conversationId} {
-      allow get, list: if isSignedIn() && resource.data.travelerId == request.auth.uid;
+      allow get, list: if isSignedIn() && (
+        resource.data.travelerId == request.auth.uid ||
+        isLinkedMentor(resource.data.mentorId)
+      );
 
       allow create: if isSignedIn()
                     && request.resource.data.travelerId == request.auth.uid
@@ -150,7 +173,10 @@ service cloud.firestore {
                     && request.resource.data.mentorId == get(/databases/$(database)/documents/bookings/$(conversationId)).data.mentorId;
 
       allow update: if isSignedIn()
-                    && resource.data.travelerId == request.auth.uid
+                    && (
+                      resource.data.travelerId == request.auth.uid ||
+                      isLinkedMentor(resource.data.mentorId)
+                    )
                     && request.resource.data.travelerId == resource.data.travelerId
                     && request.resource.data.mentorId == resource.data.mentorId
                     && request.resource.data.bookingId == resource.data.bookingId
@@ -171,13 +197,14 @@ service cloud.firestore {
       /**
        * @description Messages within a conversation.
        * @path /conversations/{conversationId}/messages/{messageId}
-       * @allow (get, list) Only the authorized traveler for now.
-       * @allow (create) Authenticated traveler; senderId must match auth.uid; validates parent conversation using getAfter() for atomic batch support.
+       * @allow (get, list) Authorized traveler or authenticated linked mentor.
+       * @allow (create) Authenticated traveler or linked mentor; senderId must match auth.uid; validates parent conversation using getAfter() for atomic batch support.
        * @deny (update, delete) Messages are immutable once written.
        */
       match /messages/{messageId} {
         allow get, list: if isSignedIn() && (
-          get(/databases/$(database)/documents/conversations/$(conversationId)).data.travelerId == request.auth.uid
+          get(/databases/$(database)/documents/conversations/$(conversationId)).data.travelerId == request.auth.uid ||
+          isLinkedMentor(get(/databases/$(database)/documents/conversations/$(conversationId)).data.mentorId)
         );
 
         allow create: if isSignedIn()
@@ -185,7 +212,10 @@ service cloud.firestore {
                       && request.resource.data.text is string
                       && request.resource.data.text.size() > 0
                       && request.resource.data.text.size() <= 2000
-                      && getAfter(/databases/$(database)/documents/conversations/$(conversationId)).data.travelerId == request.auth.uid;
+                      && (
+                        getAfter(/databases/$(database)/documents/conversations/$(conversationId)).data.travelerId == request.auth.uid ||
+                        isLinkedMentor(getAfter(/databases/$(database)/documents/conversations/$(conversationId)).data.mentorId)
+                      );
 
         allow update, delete: if false;
       }

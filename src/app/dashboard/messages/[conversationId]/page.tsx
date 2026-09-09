@@ -10,10 +10,9 @@ import {
   collection,
   query,
   orderBy,
-  writeBatch,
-  serverTimestamp,
 } from "firebase/firestore";
 import type { ConversationDTO, MessageDTO, BookingDTO, MentorDTO } from "@/lib/dtos";
+import { sendAtomicMessage } from "@/lib/messaging";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -164,19 +163,6 @@ export default function ConversationDetailPage({ params }: PageProps) {
     setSendError(null);
 
     try {
-      const batch = writeBatch(db);
-      const convRef = doc(db, "conversations", conversationId);
-      const messagesCol = collection(db, "conversations", conversationId, "messages");
-      const messageRef = doc(messagesCol);
-
-      const messagePayload = {
-        id: messageRef.id,
-        senderId: user.uid,
-        text: trimmed,
-        createdAt: serverTimestamp(),
-      };
-
-      // 1. Atomically create or update conversation parent document + add message
       if (!conversation) {
         if (!booking || booking.userId !== user.uid) {
           throw new Error("Keine gültige Buchungsbeziehung gefunden.");
@@ -185,30 +171,26 @@ export default function ConversationDetailPage({ params }: PageProps) {
           booking.mentorName ||
           (mentor ? `${mentor.firstName} ${mentor.lastName}`.trim() : "Local Mentor");
 
-        batch.set(convRef, {
-          id: conversationId,
-          bookingId: conversationId,
-          travelerId: user.uid,
-          mentorId: booking.mentorId,
-          mentorName: mentorDisplayName,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          lastMessageText: trimmed,
-          lastMessageSenderId: user.uid,
-          lastMessageCreatedAt: serverTimestamp(),
+        await sendAtomicMessage({
+          db,
+          conversationId,
+          senderId: user.uid,
+          text: trimmed,
+          createConversationData: {
+            travelerId: user.uid,
+            mentorId: booking.mentorId,
+            mentorName: mentorDisplayName,
+          },
         });
-        batch.set(messageRef, messagePayload);
       } else {
-        batch.update(convRef, {
-          updatedAt: serverTimestamp(),
-          lastMessageText: trimmed,
-          lastMessageSenderId: user.uid,
-          lastMessageCreatedAt: serverTimestamp(),
+        await sendAtomicMessage({
+          db,
+          conversationId,
+          senderId: user.uid,
+          text: trimmed,
         });
-        batch.set(messageRef, messagePayload);
       }
 
-      await batch.commit();
       setMessageText("");
     } catch (err: any) {
       console.error("Error sending message:", err);
@@ -336,11 +318,11 @@ export default function ConversationDetailPage({ params }: PageProps) {
         </Card>
       )}
 
-      {/* Mentor Activation Truthfulness Notice */}
+      {/* Mentor Assignment Notice */}
       <div className="flex items-start gap-2.5 p-3 rounded-lg bg-muted/60 border border-border text-xs text-muted-foreground">
         <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          Die Mentor-Kommunikation wird derzeit technisch freigeschaltet. Deine Nachrichten werden deinem Buchungskontext zugeordnet, sobald der Mentor-Zugang aktiviert ist.
+          Deine Unterhaltung ist deinem Local Mentor zugeordnet.
         </p>
       </div>
 

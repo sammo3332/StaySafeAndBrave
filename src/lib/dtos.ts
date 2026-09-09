@@ -38,6 +38,10 @@ export interface MentorDTO {
   active?: boolean;
 }
 
+export interface MentorAuthDTO {
+  mentorId: string;
+}
+
 export type BookingStatus = 'requested' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
 export interface BookingDTO {
