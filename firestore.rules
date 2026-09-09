@@ -132,22 +132,90 @@ service cloud.firestore {
     }
 
     /**
-     * @description Private travel reports/diaries owned by a specific user.
+     * @description Collection group rule for reports to enable public Travel Stories while respecting owner privacy.
+     * @path /{path=**}/reports/{reportId}
+     */
+    match /{path=**}/reports/{reportId} {
+      allow read: if ('visibility' in resource.data && resource.data.visibility == 'public')
+                  || (isSignedIn() && 'userId' in resource.data && resource.data.userId == request.auth.uid);
+    }
+
+    /**
+     * @description Travel reports/diaries owned by a specific user.
+     * Can be private (default) or explicitly published as public Travel Stories.
      * @path /users/{userId}/reports/{reportId}
-     * @allow (list) If the user is the owner of the parent {userId} path.
-     * @deny (get) If another user tries to access the report by ID.
-     * @principle Enforces document ownership for writes and user-scoped subcollections.
+     * @allow (get) Owner can read regardless of visibility; public can read only if visibility == 'public'.
+     * @allow (list) Owner can list all own reports.
+     * @allow (create) Owner can create; userId must match auth.uid and userId in path.
+     * @allow (update) Owner can update; userId is immutable.
+     * @allow (delete) Owner can delete own report.
      */
     match /users/{userId}/reports/{reportId} {
-      allow get, list: if isOwner(userId);
+      allow get: if isOwner(userId)
+                 || ('visibility' in resource.data && resource.data.visibility == 'public');
+      allow list: if isOwner(userId);
       
       allow create: if isOwner(userId) 
-                    && request.resource.data.userId == userId;
+                    && request.resource.data.userId == userId
+                    && request.resource.data.userId == request.auth.uid;
       
       allow update: if isExistingOwner(userId) 
-                    && request.resource.data.userId == resource.data.userId;
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.userId == request.auth.uid;
       
       allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Real mentor reviews tied to a verified booking.
+     * @path /reviews/{reviewId}
+     * INVARIANT: reviewId === bookingId (deterministic 1:1 review per booking to prevent duplicates).
+     * @allow (get, list) Public read so reviews can be displayed on mentor profiles.
+     * @allow (create) Authenticated traveler whose uid matches booking.userId and booking.mentorId matches review.mentorId.
+     * @allow (update) Traveler owner can edit rating and text; ownership fields (bookingId, mentorId, travelerId, createdAt) are immutable.
+     * @deny (delete) Denied.
+     */
+    match /reviews/{reviewId} {
+      allow get, list: if true;
+
+      allow create: if isSignedIn()
+                    && request.resource.data.id == reviewId
+                    && request.resource.data.bookingId == reviewId
+                    && request.resource.data.travelerId == request.auth.uid
+                    && exists(/databases/$(database)/documents/bookings/$(reviewId))
+                    && get(/databases/$(database)/documents/bookings/$(reviewId)).data.userId == request.auth.uid
+                    && request.resource.data.mentorId == get(/databases/$(database)/documents/bookings/$(reviewId)).data.mentorId
+                    && (
+                      get(/databases/$(database)/documents/bookings/$(reviewId)).data.status in ['confirmed', 'completed']
+                    )
+                    && request.resource.data.rating is int
+                    && request.resource.data.rating >= 1
+                    && request.resource.data.rating <= 5
+                    && (
+                      !('text' in request.resource.data) || 
+                      (request.resource.data.text is string && request.resource.data.text.size() <= 2000)
+                    );
+
+      allow update: if isSignedIn()
+                    && resource.data.travelerId == request.auth.uid
+                    && request.resource.data.travelerId == resource.data.travelerId
+                    && request.resource.data.mentorId == resource.data.mentorId
+                    && request.resource.data.bookingId == resource.data.bookingId
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                      'rating',
+                      'text',
+                      'updatedAt'
+                    ])
+                    && request.resource.data.rating is int
+                    && request.resource.data.rating >= 1
+                    && request.resource.data.rating <= 5
+                    && (
+                      !('text' in request.resource.data) || 
+                      (request.resource.data.text is string && request.resource.data.text.size() <= 2000)
+                    );
+
+      allow delete: if false;
     }
 
     /**

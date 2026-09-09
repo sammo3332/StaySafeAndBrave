@@ -65,15 +65,35 @@ export interface BookingDTO {
   notes?: string;
 }
 
+export type ReportVisibility = 'private' | 'public';
+
 export interface ReportDTO {
   id: string;
   userId: string;
   title: string;
   content: string;
-  location: string;
+  location?: string;
+  tripDate?: string;
+  mentorId?: string;
+  mentorName?: string;
+  bookingId?: string;
   imageUrls?: string[];
+  visibility?: ReportVisibility; // default is 'private'
+  publishedAt?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ReviewDTO {
+  id: string; // INVARIANT: reviewId === bookingId
+  bookingId: string;
+  mentorId: string;
+  travelerId: string;
+  travelerName?: string;
+  rating: number; // 1 to 5 integer
+  text?: string;
+  createdAt: string | Timestamp | FieldValue;
+  updatedAt: string | Timestamp | FieldValue;
 }
 
 export interface ConversationDTO {

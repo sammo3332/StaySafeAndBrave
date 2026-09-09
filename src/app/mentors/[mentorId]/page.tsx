@@ -3,9 +3,9 @@
 import { use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import type { MentorDTO } from '@/lib/dtos';
+import { useFirestore, useDoc, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, collection, query, where } from 'firebase/firestore';
+import type { MentorDTO, ReviewDTO } from '@/lib/dtos';
 import { getPackages } from '@/lib/packages';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +45,14 @@ export default function MentorDetailPage({ params }: PageProps) {
 
   const { data: mentor, isLoading, error } = useDoc<MentorDTO>(mentorRef);
   const packages = getPackages();
+
+  // Query real reviews from /reviews collection for this mentor
+  const reviewsRef = useMemoFirebase(() => {
+    if (!db || !mentorId) return null;
+    return query(collection(db, 'reviews'), where('mentorId', '==', mentorId));
+  }, [db, mentorId]);
+
+  const { data: realReviews } = useCollection<ReviewDTO>(reviewsRef);
 
   // Loading state
   if (isLoading) {
@@ -117,10 +125,12 @@ export default function MentorDetailPage({ params }: PageProps) {
   }
 
   const fullName = `${mentor.firstName || ''} ${mentor.lastName || ''}`.trim() || 'Lokaler Mentor';
-  const hasRealRating =
-    typeof mentor.averageRating === 'number' &&
-    !isNaN(mentor.averageRating) &&
-    mentor.averageRating > 0;
+  const realReviewCount = realReviews?.length || 0;
+  const realAverageRating =
+    realReviewCount > 0
+      ? realReviews!.reduce((sum, r) => sum + r.rating, 0) / realReviewCount
+      : null;
+  const hasRealRating = realAverageRating !== null;
   const isVerified = mentor.verificationStatus === 'verified';
   const languagesList = Array.isArray(mentor.languages) ? mentor.languages : [];
   const expertiseList = Array.isArray(mentor.areasOfExpertise) ? mentor.areasOfExpertise : [];
@@ -189,21 +199,24 @@ export default function MentorDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Real rating only when backed by data */}
-              {hasRealRating && (
+              {/* Real rating only when backed by data; otherwise neutral empty state */}
+              {hasRealRating ? (
                 <div
                   className="flex items-center gap-2 p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60"
-                  aria-label={`Bewertung: ${mentor.averageRating!.toFixed(1)} von 5 Sternen`}
+                  aria-label={`Bewertung: ${realAverageRating!.toFixed(1)} von 5 Sternen`}
                 >
                   <Star className="w-4 h-4 fill-amber-400 text-amber-500 shrink-0" aria-hidden="true" />
                   <span className="font-semibold text-sm text-amber-900 dark:text-amber-200">
-                    {mentor.averageRating!.toFixed(1)} / 5.0
+                    {realAverageRating!.toFixed(1)} / 5.0
                   </span>
-                  {typeof mentor.reviewCount === 'number' && mentor.reviewCount > 0 && (
-                    <span className="text-xs text-muted-foreground">
-                      ({mentor.reviewCount} {mentor.reviewCount === 1 ? 'Bewertung' : 'Bewertungen'})
-                    </span>
-                  )}
+                  <span className="text-xs text-muted-foreground">
+                    ({realReviewCount} {realReviewCount === 1 ? 'Bewertung' : 'Bewertungen'})
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40 border border-border/50 text-xs text-muted-foreground">
+                  <Star className="w-4 h-4 text-muted-foreground/40 shrink-0" aria-hidden="true" />
+                  <span>Noch keine Bewertungen</span>
                 </div>
               )}
 
@@ -347,7 +360,80 @@ export default function MentorDetailPage({ params }: PageProps) {
             </CardContent>
           </Card>
 
-          {/* Section 5: Package Preview */}
+          {/* Section 5: Real Reviews from verified travelers */}
+          <Card className="border border-border/70 shadow-sm">
+            <CardHeader>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-primary">
+                  <Star className="w-5 h-5 text-amber-500 fill-amber-400 shrink-0" aria-hidden="true" />
+                  <CardTitle className="text-xl font-semibold">
+                    Reisebewertungen ({realReviewCount})
+                  </CardTitle>
+                </div>
+                {hasRealRating && (
+                  <span className="text-xs font-semibold text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-800 self-start sm:self-auto">
+                    Durchschnitt: {realAverageRating!.toFixed(1)} / 5.0
+                  </span>
+                )}
+              </div>
+              <CardDescription className="text-sm text-muted-foreground">
+                Authentische Rückmeldungen von Reisenden, die eine reale Begleitung mit {mentor.firstName} gebucht haben.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {realReviewCount > 0 ? (
+                <div className="space-y-4">
+                  {realReviews!.map((rev) => (
+                    <div key={rev.id} className="p-4 rounded-xl border bg-muted/20 space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star
+                                key={s}
+                                className={`w-3.5 h-3.5 ${
+                                  rev.rating >= s
+                                    ? "fill-amber-400 text-amber-500"
+                                    : "text-muted-foreground/30"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs font-semibold text-foreground">
+                            {rev.travelerName || "Reisende Person"}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-muted-foreground">
+                          {(() => {
+                            const c = rev.createdAt as any;
+                            if (!c) return "";
+                            if (typeof c === "object" && typeof c.toDate === "function") {
+                              return c.toDate().toLocaleDateString("de-DE");
+                            }
+                            const d = new Date(c);
+                            return !isNaN(d.getTime()) ? d.toLocaleDateString("de-DE") : "";
+                          })()}
+                        </span>
+                      </div>
+                      {rev.text && (
+                        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed italic">
+                          &ldquo;{rev.text}&rdquo;
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-6 rounded-xl border border-dashed text-center bg-muted/20">
+                  <p className="text-sm text-muted-foreground">
+                    Für {mentor.firstName} liegen noch keine Bewertungen vor. Nach einer durchgeführten Reisebegleitung können Reisende direkt in ihrem Buchungsbereich eine Bewertung abgeben.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Section 6: Package Preview */}
           <Card className="border border-border/70 shadow-sm bg-muted/20">
             <CardHeader>
               <div className="flex items-center gap-2 text-primary">

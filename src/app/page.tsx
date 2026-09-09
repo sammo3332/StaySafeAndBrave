@@ -34,28 +34,6 @@ const HowItWorksStep = ({ icon: Icon, title, description, stepNumber }: { icon: 
   </div>
 );
 
-const TestimonialCard = ({ quote, author, location, avatar, dataAiHint }: { quote: string, author: string, location: string, avatar: string, dataAiHint: string }) => (
-  <Card className="shadow-lg bg-card/80 backdrop-blur-sm border-border/50 hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
-    <CardContent className="pt-6 flex-grow flex flex-col">
-      <div className="flex items-center mb-4">
-        <Image src={avatar} alt={author} data-ai-hint={dataAiHint} width={56} height={56} className="rounded-full mr-4 border-2 border-accent/50" />
-        <div>
-          <p className="font-semibold text-lg text-foreground">{author}</p>
-          <p className="text-sm text-muted-foreground">{location}</p>
-        </div>
-      </div>
-      <blockquote className="text-muted-foreground italic border-l-4 border-primary pl-4 my-4 text-base leading-relaxed flex-grow">
-        "{quote}"
-      </blockquote>
-      <div className="flex mt-auto pt-2">
-        {[...Array(5)].map((_, i) => (
-            <Star key={i} className="w-5 h-5 text-secondary fill-secondary" />
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-);
-
 export default function HomePage() {
   return (
     <>
@@ -192,31 +170,26 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="w-full py-16 md:py-24 bg-secondary/20">
-          <div className="container mx-auto px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tight text-center sm:text-4xl mb-16 text-foreground">
-              Stimmen unserer <span className="text-primary">mutigen Reisenden</span>
+        {/* Travel Stories Discovery Section */}
+        <section className="w-full py-16 md:py-24 bg-secondary/15">
+          <div className="container mx-auto px-4 md:px-6 text-center max-w-3xl space-y-6">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
+              Authentische <span className="text-primary">Travel Stories</span>
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <TestimonialCard
-                avatar={images.avatars.womanTraveler.src} dataAiHint={images.avatars.womanTraveler.dataAiHint}
-                quote="Dank meiner Mentorin Sarah habe ich Kapstadt von einer ganz neuen, sicheren Seite kennengelernt. Unvergesslich und absolut empfehlenswert!"
-                author="Lena M."
-                location="Berlin, Deutschland"
-              />
-              <TestimonialCard
-                avatar={images.avatars.soloFemaleTraveler.src} dataAiHint={images.avatars.soloFemaleTraveler.dataAiHint}
-                quote="Die Sicherheit und die lokalen Tipps waren Gold wert. Ich habe mich jederzeit gut aufgehoben und empowered gefühlt. Stay Safe and Brave ist top!"
-                author="Sophie K."
-                location="Zürich, Schweiz"
-              />
-              <TestimonialCard
-                avatar={images.avatars.womanReview.src} dataAiHint={images.avatars.womanReview.dataAiHint}
-                quote="Eine fantastische Erfahrung! Mein Guide in Johannesburg war super kompetent, freundlich und hat mir Orte gezeigt, die ich alleine nie gefunden hätte."
-                author="Maria P."
-                location="Wien, Österreich"
-              />
+            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
+              Lies echte Reiseberichte unserer Reisenden über ihre Begleitung mit lokalen Mentoren in Südafrika. Entdecke Insider-Routen, Sicherheitstipps und persönliche Reiseerfahrungen.
+            </p>
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+                <Link href="/stories">
+                  Travel Stories lesen
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/mentors">
+                  Local Mentoren entdecken
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
