@@ -1,4 +1,6 @@
 
+import type { Timestamp, FieldValue } from 'firebase/firestore';
+
 export interface UserDTO {
   id: string;
   firstName: string;
@@ -36,18 +38,27 @@ export interface MentorDTO {
   active?: boolean;
 }
 
+export type BookingStatus = 'requested' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
+
 export interface BookingDTO {
   id: string;
   userId: string;
   mentorId: string;
-  bookingDate: string;
-  durationHours: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  totalPrice: number;
-  paymentIntentId: string;
+  mentorName?: string;
+  packageId?: string;
+  packageName?: string;
+  requestedStartDate?: string;
+  requestedEndDate?: string;
+  travelerMessage?: string;
+  status: BookingStatus;
+  createdAt: string | Timestamp | FieldValue;
+  updatedAt: string | Timestamp | FieldValue;
+  // Legacy fields for backward compatibility
+  bookingDate?: string;
+  durationHours?: number;
+  totalPrice?: number;
+  paymentIntentId?: string;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface ReportDTO {

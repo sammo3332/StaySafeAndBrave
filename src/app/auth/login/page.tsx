@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogIn, UserPlus, HeartHandshake, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { 
   createUserWithEmailAndPassword, 
@@ -26,7 +26,7 @@ import {
 } from "firebase/auth";
 import { doc } from "firebase/firestore";
 import { useAuth, useFirestore, setDocumentNonBlocking } from "@/firebase";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import type { UserDTO } from "@/lib/dtos";
 
 const loginSchema = z.object({
@@ -47,8 +47,11 @@ const registerSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export default function LoginPage() {
+function LoginFormContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get("redirect") || "/dashboard";
+
   const auth = useAuth();
   const db = useFirestore();
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +71,7 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast({ title: "Anmeldung erfolgreich!", description: "Willkommen zurück." });
-      router.push("/dashboard");
+      router.push(redirectPath);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -104,7 +107,7 @@ export default function LoginPage() {
         title: "Konto erstellt!",
         description: "Dein Profil wurde erfolgreich angelegt.",
       });
-      router.push("/dashboard");
+      router.push(redirectPath);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -250,5 +253,17 @@ export default function LoginPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center py-24">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    }>
+      <LoginFormContent />
+    </Suspense>
   );
 }

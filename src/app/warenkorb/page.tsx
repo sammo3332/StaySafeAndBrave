@@ -74,12 +74,25 @@ export default function WarenkorbPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
-              <Button
-                disabled
-                className="w-full bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed font-medium border border-border/60 shadow-none"
-              >
-                Buchung noch nicht verfügbar
-              </Button>
+              {cart.mentorId ? (
+                <Button
+                  asChild
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm"
+                >
+                  <Link href="/booking">
+                    Zur Buchungsanfrage <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm"
+                >
+                  <Link href="/mentors">
+                    Local Mentor auswählen <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+              )}
               <div className="flex flex-col sm:flex-row gap-2 w-full">
                 <Button asChild variant="outline" className="w-full">
                   <Link href="/bezahlen">
