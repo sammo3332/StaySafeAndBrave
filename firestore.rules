@@ -93,25 +93,20 @@ service cloud.firestore {
     }
 
     /**
-     * @description Bookings are shared between a Traveler and a Mentor.
+     * @description Bookings created by travelers for local mentors.
      * @path /bookings/{bookingId}
-     * @allow (get) If the user is the 'userId' or 'mentorId' in the document.
-     * @deny (create) If the user is not one of the two parties mentioned in the data.
-     * @principle Shared Access (Closed Collaborators) using denormalized IDs.
+     * @allow (get, list) Travelers may only read their own bookings (where userId == request.auth.uid).
+     * @allow (create) Travelers can only create bookings for request.auth.uid with initial status "requested".
+     * @deny (update, delete) Arbitrary traveler updates and deletes are denied for now.
      */
     match /bookings/{bookingId} {
-      allow get: if isBookingParticipant(resource.data);
-      allow list: if isSignedIn(); // Filtering is handled by the client query (where userId == uid)
+      allow get, list: if isSignedIn() && resource.data.userId == request.auth.uid;
       
       allow create: if isSignedIn() 
-                    && (request.resource.data.userId == request.auth.uid || request.resource.data.mentorId == request.auth.uid);
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.status == "requested";
       
-      allow update: if resource != null 
-                    && isBookingParticipant(resource.data)
-                    && request.resource.data.userId == resource.data.userId
-                    && request.resource.data.mentorId == resource.data.mentorId;
-      
-      allow delete: if resource != null && isBookingParticipant(resource.data);
+      allow update, delete: if false;
     }
 
     /**
