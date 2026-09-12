@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,21 +17,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone, MessageSquare, Send, MapPinIcon, Building } from "lucide-react";
+import { Mail, Phone, MessageSquare, Send, MapPinIcon, Building, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import Image from "next/image";
 import images from "@/lib/placeholder-images.json";
 
 const contactFormSchema = z.object({
-  name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein."),
-  email: z.string().email("Ungültige E-Mail Adresse."),
-  subject: z.string().min(5, "Betreff muss mindestens 5 Zeichen lang sein."),
-  message: z.string().min(10, "Nachricht muss mindestens 10 Zeichen lang sein.").max(500, "Nachricht darf maximal 500 Zeichen lang sein."),
+  name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen lang sein.").max(100, "Name darf maximal 100 Zeichen lang sein."),
+  email: z.string().trim().email("Ungültige E-Mail Adresse.").max(254, "E-Mail darf maximal 254 Zeichen lang sein."),
+  subject: z.string().trim().min(3, "Betreff muss mindestens 3 Zeichen lang sein.").max(150, "Betreff darf maximal 150 Zeichen lang sein."),
+  message: z.string().trim().min(10, "Nachricht muss mindestens 10 Zeichen lang sein.").max(2000, "Nachricht darf maximal 2000 Zeichen lang sein."),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export default function KontaktPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -41,13 +44,43 @@ export default function KontaktPage() {
     },
   });
 
-  function onSubmit(data: ContactFormValues) {
-    console.log("Kontaktformular gesendet:", data);
-    toast({
-      title: "Nachricht gesendet!",
-      description: "Vielen Dank für deine Kontaktaufnahme. Wir melden uns bald bei dir.",
-    });
-    form.reset();
+  async function onSubmit(data: ContactFormValues) {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        toast({
+          variant: "destructive",
+          title: "Nachricht konnte nicht gesendet werden",
+          description: result.error || "Beim Senden deiner Nachricht ist ein Fehler aufgetreten.",
+        });
+        return;
+      }
+
+      toast({
+        title: "Nachricht gesendet!",
+        description: result.message || "Vielen Dank für deine Kontaktaufnahme. Wir melden uns bald bei dir.",
+      });
+      form.reset();
+    } catch (err: any) {
+      console.error("Error submitting contact form:", err);
+      toast({
+        variant: "destructive",
+        title: "Übertragungsfehler",
+        description: "Die Verbindung zum Server ist fehlgeschlagen. Bitte prüfe deine Internetverbindung und versuche es erneut.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -140,13 +173,26 @@ export default function KontaktPage() {
                               {...field}
                             />
                           </FormControl>
-                          <FormDescription>Maximal 500 Zeichen.</FormDescription>
+                          <FormDescription>Maximal 2000 Zeichen.</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                      <Send className="w-4 h-4 mr-2" /> Nachricht Senden
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Wird gesendet...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 mr-2" /> Nachricht Senden
+                        </>
+                      )}
                     </Button>
                   </form>
                 </Form>

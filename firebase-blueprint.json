@@ -262,6 +262,20 @@
         "createdAt",
         "updatedAt"
       ]
+    },
+    "AdminAuth": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AdminAuth",
+      "type": "object",
+      "description": "Represents private admin mapping document where document ID is the Firebase Auth UID.",
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["admin"],
+          "description": "Role flag strictly equal to 'admin'."
+        }
+      },
+      "required": ["role"]
     }
   },
   "auth": {
@@ -336,6 +350,22 @@
             {
               "name": "reportId",
               "description": "The unique identifier for the specific travel report."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/adminAuth/{authUid}",
+        "definition": {
+          "entityName": "AdminAuth",
+          "schema": {
+            "$ref": "#/entities/AdminAuth"
+          },
+          "description": "Private mapping for admin identities. Only readable by the authenticated user whose auth.uid matches authUid.",
+          "params": [
+            {
+              "name": "authUid",
+              "description": "Firebase Auth UID matching document ID."
             }
           ]
         }

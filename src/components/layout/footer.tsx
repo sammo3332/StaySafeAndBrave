@@ -49,6 +49,7 @@ export function Footer() {
               <li><Link href="/impressum" className="hover:text-primary hover:underline">Impressum</Link></li>
               <li><Link href="/datenschutz" className="hover:text-primary hover:underline">Datenschutz</Link></li>
               <li><Link href="/agb" className="hover:text-primary hover:underline">AGB</Link></li>
+              <li><Link href="/admin" className="hover:text-primary hover:underline">Administration</Link></li>
             </ul>
           </div>
 

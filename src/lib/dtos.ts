@@ -42,6 +42,10 @@ export interface MentorAuthDTO {
   mentorId: string;
 }
 
+export interface AdminAuthDTO {
+  role: 'admin';
+}
+
 export type BookingStatus = 'requested' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
 export interface BookingDTO {

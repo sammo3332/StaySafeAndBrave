@@ -59,7 +59,28 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/mentorAuth/$(request.auth.uid)).data.mentorId == mentorId;
     }
 
+    /** Checks if the authenticated user has an active admin role in /adminAuth/{authUid}. */
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/adminAuth/$(request.auth.uid))
+        && get(/databases/$(database)/documents/adminAuth/$(request.auth.uid)).data.role == "admin";
+    }
+
     // --- COLLECTION RULES ---
+
+    /**
+     * @description Private mapping for admin identities.
+     * @path /adminAuth/{authUid}
+     * INVARIANT: Document ID is the Firebase Auth UID. Contains { role: "admin" }.
+     * @allow (get) Only the authenticated user whose auth.uid matches {authUid} can read their own admin mapping.
+     * @deny (list) Listing is forbidden to prevent enumeration.
+     * @deny (create, update, delete) Clients cannot write mappings; provisioning is server/admin-tooling only.
+     */
+    match /adminAuth/{authUid} {
+      allow get: if isSignedIn() && request.auth.uid == authUid;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
 
     /**
      * @description Private mapping between Firebase Auth UIDs and public mentor profile IDs.
@@ -118,17 +139,31 @@ service cloud.firestore {
      * @description Bookings created by travelers for local mentors.
      * @path /bookings/{bookingId}
      * @allow (get, list) Travelers may only read their own bookings (where userId == request.auth.uid).
+     *                    Admins may read/list all bookings for operational management.
      * @allow (create) Travelers can only create bookings for request.auth.uid with initial status "requested".
-     * @deny (update, delete) Arbitrary traveler updates and deletes are denied for now.
+     * @allow (update) Admin may update operational status; ownership fields (userId, mentorId, packageId, createdAt) are strictly immutable.
+     * @deny (delete) Arbitrary deletes are denied.
      */
     match /bookings/{bookingId} {
-      allow get, list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get, list: if (isSignedIn() && resource.data.userId == request.auth.uid)
+                       || isAdmin();
       
       allow create: if isSignedIn() 
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.status == "requested";
       
-      allow update, delete: if false;
+      allow update: if isAdmin()
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.mentorId == resource.data.mentorId
+                    && request.resource.data.packageId == resource.data.packageId
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+                      'status',
+                      'updatedAt'
+                    ])
+                    && request.resource.data.status in ['requested', 'confirmed', 'completed', 'cancelled'];
+      
+      allow delete: if false;
     }
 
     /**
