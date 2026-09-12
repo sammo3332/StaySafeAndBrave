@@ -1,21 +1,17 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Dashboard',
+  title: 'Buchungsanfrage',
   robots: {
     index: false,
     follow: false,
   },
 };
 
-export default function DashboardLayout({
+export default function BookingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="container mx-auto px-4">
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }

@@ -276,15 +276,20 @@ export default function DiaryView() {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 text-center py-20">
+      <div className="container mx-auto px-4 text-center py-20 max-w-lg">
         <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
         <h1 className="text-2xl font-bold">Privates Reisetagebuch</h1>
-        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+        <p className="text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
           Melde dich an, um persönliche Notizen, Routen und Reiseberichte festzuhalten oder optional als Travel Story zu teilen.
         </p>
-        <Button asChild>
-          <Link href="/auth/login">Jetzt anmelden</Link>
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button asChild>
+            <Link href="/auth/login">Jetzt anmelden</Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/stories">Öffentliche Travel Stories lesen</Link>
+          </Button>
+        </div>
       </div>
     );
   }

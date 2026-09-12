@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'AI Travel Assistant | Stay Safe & Brave',
+  title: 'AI Travel Assistant',
   description: 'Dein digitaler Reisebegleiter für die Vorbereitung – dein Local Mentor bleibt dein persönlicher Ansprechpartner vor Ort.',
 };
 

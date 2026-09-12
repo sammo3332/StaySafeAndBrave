@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Info } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Datenschutzerklärung",
+  description: "Informationen zur Erhebung, Verarbeitung und zum Schutz personenbezogener Daten auf Stay Safe & Brave.",
+};
 
 export default function DatenschutzPage() {
   return (
@@ -10,7 +16,7 @@ export default function DatenschutzPage() {
             Datenschutzerklärung
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Informationen zum Umgang mit Ihren persönlichen Daten.
+            Informationen zum Umgang mit Ihren persönlichen Daten auf Stay Safe &amp; Brave.
           </p>
         </header>
 
@@ -18,78 +24,105 @@ export default function DatenschutzPage() {
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2 text-primary">
               <ShieldCheck className="w-6 h-6 text-accent" />
-              Grundlegendes
+              Verantwortliche Stelle
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              Diese Datenschutzerklärung soll die Nutzer dieser Website über die Art, den Umfang und den Zweck der Erhebung und Verwendung personenbezogener Daten durch den Websitebetreiber [Name Ihres Unternehmens/Ihren Namen einfügen, Adresse] informieren.
+              Verantwortlich für die Datenverarbeitung auf dieser Website ist:
             </p>
             <p>
-              Der Websitebetreiber nimmt Ihren Datenschutz sehr ernst und behandelt Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Vorschriften. Da durch neue Technologien und die ständige Weiterentwicklung dieser Webseite Änderungen an dieser Datenschutzerklärung vorgenommen werden können, empfehlen wir Ihnen sich die Datenschutzerklärung in regelmäßigen Abständen wieder durchzulesen.
-            </p>
-            <p>
-              Definitionen der verwendeten Begriffe (z.B. “personenbezogene Daten” oder “Verarbeitung”) finden Sie in Art. 4 DSGVO.
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-xl text-primary">Zugriffsdaten</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
-            <p>
-              Wir, der Websitebetreiber bzw. Seitenprovider, erheben aufgrund unseres berechtigten Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten über Zugriffe auf die Website und speichern diese als „Server-Logfiles“ auf dem Server der Website ab. Folgende Daten werden so protokolliert:
-            </p>
-            <ul className="list-disc list-inside pl-4">
-              <li>Besuchte Website</li>
-              <li>Uhrzeit zum Zeitpunkt des Zugriffes</li>
-              <li>Menge der gesendeten Daten in Byte</li>
-              <li>Quelle/Verweis, von welchem Sie auf die Seite gelangten</li>
-              <li>Verwendeter Browser</li>
-              <li>Verwendetes Betriebssystem</li>
-              <li>Verwendete IP-Adresse</li>
-            </ul>
-            <p>
-              Die Server-Logfiles werden für maximal 7 Tage gespeichert und anschließend gelöscht. Die Speicherung der Daten erfolgt aus Sicherheitsgründen, um z. B. Missbrauchsfälle aufklären zu können. Müssen Daten aus Beweisgründen aufgehoben werden, sind sie solange von der Löschung ausgenommen bis der Vorfall endgültig geklärt ist.
+              <strong>Laura Schrimpf</strong><br />
+              Josephstraße 12<br />
+              44137 Dortmund<br />
+              Deutschland<br />
+              E-Mail: info@staysafeandbrave.com
             </p>
           </CardContent>
         </Card>
 
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl text-primary">Umgang mit Kontaktdaten</CardTitle>
+            <CardTitle className="text-xl text-primary">Bereitstellung der Webanwendung &amp; Server-Infrastruktur</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
-             <p>
-              Nehmen Sie mit uns als Websitebetreiber durch die angebotenen Kontaktmöglichkeiten Verbindung auf, werden Ihre Angaben gespeichert, damit auf diese zur Bearbeitung und Beantwortung Ihrer Anfrage zurückgegriffen werden kann. Ohne Ihre Einwilligung werden diese Daten nicht an Dritte weitergegeben.
+            <p>
+              Diese Anwendung wird technisch auf Basis moderner Webtechnologien (Next.js) bereitgestellt. Beim Aufruf der Seiten erfassen die Server standardmäßig technische Verbindungsinformationen (wie IP-Adresse, Datum und Uhrzeit des Zugriffs, Browsertyp und Betriebssystem), um die Auslieferung der Website, die Stabilität und die Systemsicherheit zu gewährleisten.
             </p>
           </CardContent>
         </Card>
-        
+
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl text-primary">Rechte des Nutzers</CardTitle>
+            <CardTitle className="text-xl text-primary">Eingesetzte Plattformdienste &amp; technische Komponenten</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              Sie haben als Nutzer das Recht, auf Antrag eine kostenlose Auskunft darüber zu erhalten, welche personenbezogenen Daten über Sie gespeichert wurden. Sie haben außerdem das Recht auf Berichtigung falscher Daten und auf die Verarbeitungseinschränkung oder Löschung Ihrer personenbezogenen Daten. Falls zutreffend, können Sie auch Ihr Recht auf Datenportabilität geltend machen. Sollten Sie annehmen, dass Ihre Daten unrechtmäßig verarbeitet wurden, können Sie eine Beschwerde bei der zuständigen Aufsichtsbehörde einreichen.
+              Die Plattform befindet sich im Status eines technisch entwickelten Produktes / Portfolioprojektes. Folgende Dienste und Module sind im System integriert bzw. grundlegend angelegt:
+            </p>
+            <div className="space-y-3 pl-1">
+              <div>
+                <strong>Firebase Authentication:</strong>
+                <p className="mt-0.5">
+                  Für die Registrierung und Anmeldung von Nutzerkonten wird Firebase Authentication genutzt. Dabei werden Anmeldedaten (z. B. E-Mail-Adresse und verschlüsseltes Passwort) zur sicheren Identitätsprüfung verarbeitet.
+                </p>
+              </div>
+
+              <div>
+                <strong>Cloud Firestore:</strong>
+                <p className="mt-0.5">
+                  Zur Speicherung von Nutzerprofilen, Mentor-Informationen, Buchungsanfragen und Reisetagebucheinträgen wird eine Firestore-NoSQL-Datenbank betrieben. Der Datenzugriff ist über rollen- und besitzbasierte Sicherheitsregeln reglementiert.
+                </p>
+              </div>
+
+              <div>
+                <strong>Google / Gemini API (AI Travel Assistant):</strong>
+                <p className="mt-0.5">
+                  Für den integrierten KI-Reiseassistenten werden vom Nutzer eingegebene Textanfragen serverseitig an die Google Gemini API übermittelt, um kontextbezogene Empfehlungen zu generieren. Bitte geben Sie in den Chat keine vertraulichen oder hochsensiblen persönlichen Daten ein.
+                </p>
+              </div>
+
+              <div>
+                <strong>Zahlungsabwicklung (Stripe):</strong>
+                <p className="mt-0.5">
+                  Die technische Grundlage für eine Zahlungsabwicklung via Stripe ist vorbereitet, jedoch derzeit für Live-Zahlungen nicht aktiviert (fail-closed). Es werden im aktuellen Entwicklungsstand keine echten Zahlungs- oder Kreditkartendaten verarbeitet.
+                </p>
+              </div>
+
+              <div>
+                <strong>Transaktions-E-Mails:</strong>
+                <p className="mt-0.5">
+                  Die serverseitigen Schnittstellen für Benachrichtigungs- und Kontakt-E-Mails sind vorbereitet, derzeit jedoch nicht an einen aktiven produktiven E-Mail-Provider angebunden.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-xl text-primary">Rechte der betroffenen Personen</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-muted-foreground">
+            <p>
+              Sie haben nach den maßgeblichen gesetzlichen Bestimmungen das Recht auf Auskunft über Ihre gespeicherten personenbezogenen Daten, Berichtigung, Löschung oder Einschränkung der Verarbeitung sowie ein Recht auf Datenübertragbarkeit und Widerspruch.
             </p>
             <p>
-              <strong>Löschung von Daten</strong><br />
-              Sofern Ihr Wunsch nicht mit einer gesetzlichen Pflicht zur Aufbewahrung von Daten (z. B. Vorratsdatenspeicherung) kollidiert, haben Sie ein Anrecht auf Löschung Ihrer Daten. Von uns gespeicherte Daten werden, sollten sie für ihre Zweckbestimmung nicht mehr vonnöten sein und es keine gesetzlichen Aufbewahrungsfristen geben, gelöscht. Falls eine Löschung nicht durchgeführt werden kann, da die Daten für zulässige gesetzliche Zwecke erforderlich sind, erfolgt eine Einschränkung der Datenverarbeitung. In diesem Fall werden die Daten gesperrt und nicht für andere Zwecke verarbeitet.
-            </p>
-             <p>
-              <strong>Widerspruchsrecht</strong><br />
-              Nutzer dieser Webseite können von ihrem Widerspruchsrecht Gebrauch machen und der Verarbeitung ihrer personenbezogenen Daten zu jeder Zeit widersprechen.
+              Für Anfragen zu Ihren Daten oder zur Ausübung Ihrer Rechte können Sie sich jederzeit an folgende Adresse wenden:
             </p>
             <p>
-              Wenn Sie eine Berichtigung, Sperrung, Löschung oder Auskunft über die zu Ihrer Person gespeicherten personenbezogenen Daten wünschen oder Fragen bzgl. der Erhebung, Verarbeitung oder Verwendung Ihrer personenbezogenen Daten haben oder erteilte Einwilligungen widerrufen möchten, wenden Sie sich bitte an folgende E-Mail-Adresse: [Ihre E-Mail-Adresse für Datenschutzanfragen]
+              E-Mail: <a href="mailto:info@staysafeandbrave.com" className="text-primary hover:underline">info@staysafeandbrave.com</a>
             </p>
           </CardContent>
         </Card>
-        {/* Add further sections as needed, e.g., Cookies, Social Media Plugins, Firebase specific information */}
+
+        {/* Status notice */}
+        <div className="rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground flex items-start gap-2.5">
+          <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            Diese Datenschutzerklärung wird vor einem öffentlichen kommerziellen Betrieb abschließend rechtlich geprüft und an die final eingesetzten Dienste angepasst.
+          </p>
+        </div>
       </div>
     </div>
   );

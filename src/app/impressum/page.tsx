@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Impressum",
+  description: "Impressum und rechtliche Angaben gemäß § 5 TMG für die Plattform Stay Safe & Brave.",
+};
 
 export default function ImpressumPage() {
   return (
@@ -24,36 +30,18 @@ export default function ImpressumPage() {
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
               <strong>Stay Safe &amp; Brave</strong><br />
-              [Max Mustermann / Musterfirma UG (haftungsbeschränkt)]<br />
-              Musterstraße 1<br />
-              12345 Musterstadt<br />
+              Laura Schrimpf<br />
+              Josephstraße 12<br />
+              44137 Dortmund<br />
               Deutschland
             </p>
             <p>
               <strong>Vertreten durch:</strong><br />
-              [Max Mustermann]
+              Laura Schrimpf
             </p>
             <p>
               <strong>Kontakt:</strong><br />
-              Telefon: [Deine Telefonnummer (optional)]<br />
-              E-Mail: info@staysafeandbrave.de (Beispiel)
-            </p>
-            <p>
-              <strong>Registereintrag:</strong><br />
-              [Eintragung im Handelsregister / Genossenschaftsregister / Partnerschaftsregister (falls zutreffend)]<br />
-              [Registernummer]<br />
-              [Registergericht]
-            </p>
-            <p>
-              <strong>Umsatzsteuer-ID:</strong><br />
-              Umsatzsteuer-Identifikationsnummer gemäß §27a Umsatzsteuergesetz:<br />
-              [Deine Umsatzsteuer-ID (falls vorhanden)]
-            </p>
-            <p>
-              <strong>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:</strong><br />
-              [Max Mustermann]<br />
-              [Musterstraße 1]<br />
-              [12345 Musterstadt]
+              E-Mail: info@staysafeandbrave.com
             </p>
           </CardContent>
         </Card>

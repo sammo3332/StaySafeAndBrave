@@ -1,7 +1,19 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeartHandshake, UserCheck, MessageSquareHeart, MapPin, Users } from "lucide-react";
 import Image from "next/image";
 import images from "@/lib/placeholder-images.json";
+
+export const metadata: Metadata = {
+  title: "Sicherheitsrichtlinien & Vertrauen",
+  description:
+    "Erfahre mehr über unseren Verifizierungsprozess für Local Mentoren, Sicherheitsstandards und nützliche Verhaltensregeln für deine Reise in Südafrika.",
+  openGraph: {
+    title: "Sicherheitsrichtlinien & Vertrauen | Stay Safe & Brave",
+    description:
+      "Erfahre mehr über unseren Verifizierungsprozess für Local Mentoren, Sicherheitsstandards und nützliche Verhaltensregeln für deine Reise in Südafrika.",
+  },
+};
 
 export default function SicherheitsrichtlinienPage() {
   return (

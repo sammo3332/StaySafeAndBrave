@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollText } from "lucide-react";
+import { ScrollText, Info } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Allgemeine Geschäftsbedingungen (AGB)",
+  description: "Nutzungs- und Rahmenbedingungen für die Plattform Stay Safe & Brave.",
+};
 
 export default function AGBPage() {
   return (
@@ -10,7 +16,7 @@ export default function AGBPage() {
             Allgemeine Geschäftsbedingungen (AGB)
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Unsere Vertragsbedingungen für die Nutzung von Stay Safe and Brave.
+            Rahmenbedingungen zur Nutzung der Plattform Stay Safe &amp; Brave.
           </p>
         </header>
 
@@ -18,15 +24,15 @@ export default function AGBPage() {
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2 text-primary">
               <ScrollText className="w-6 h-6 text-accent" />
-              § 1 Geltungsbereich
+              § 1 Plattformkonzept &amp; Geltungsbereich
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              (1) Diese Allgemeinen Geschäftsbedingungen (nachfolgend "AGB") der [Musterfirma UG (haftungsbeschränkt) / Max Mustermann] (nachfolgend "Anbieter") gelten für alle Verträge über die Nutzung der Plattform "Stay Safe and Brave" (nachfolgend "Plattform") durch den Nutzer (nachfolgend "Nutzer").
+              (1) Stay Safe &amp; Brave verbindet selbstbestimmte Reisende mit Interesse an Südafrika mit vertrauenswürdigen Local Mentors.
             </p>
             <p>
-              (2) Abweichende Bedingungen des Nutzers werden nicht anerkannt, es sei denn, der Anbieter stimmt ihrer Geltung ausdrücklich schriftlich zu.
+              (2) Diese Bedingungen regeln die Nutzung der Webanwendung und der bereitgestellten digitalen Funktionen der Plattform.
             </p>
           </CardContent>
         </Card>
@@ -37,13 +43,10 @@ export default function AGBPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              (1) Der Anbieter stellt eine Online-Plattform zur Verfügung, über die Nutzer (insbesondere alleinreisende Frauen) Kontakt zu lokalen Mentoren in Südafrika aufnehmen und geführte Touren oder Begleitungen (nachfolgend "Mentor-Dienste") buchen können.
+              (1) Die Plattform stellt Informationsprofile von Local Mentors, Orientierungs- und Begleitpakete, Kontaktmöglichkeiten sowie begleitende digitale Werkzeuge (wie den KI-Reiseassistenten und das persönliche Reisetagebuch) zur Verfügung.
             </p>
             <p>
-              (2) Der Anbieter tritt lediglich als Vermittler zwischen Nutzern und Mentoren auf. Verträge über Mentor-Dienste kommen ausschließlich zwischen dem Nutzer und dem jeweiligen Mentor zustande. Der Anbieter ist nicht Partei dieser Verträge und übernimmt keine Haftung für die Durchführung oder Qualität der Mentor-Dienste.
-            </p>
-            <p>
-              (3) Die Nutzung der Plattform zur Registrierung und Suche nach Mentoren ist grundsätzlich kostenlos. Kosten für die Buchung von Mentor-Diensten werden gesondert ausgewiesen.
+              (2) Stay Safe &amp; Brave ist kein Pauschalreiseveranstalter und bietet keine eigenen Beförderungsleistungen an.
             </p>
           </CardContent>
         </Card>
@@ -54,57 +57,21 @@ export default function AGBPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-muted-foreground">
             <p>
-              (1) Die Nutzung bestimmter Funktionen der Plattform, insbesondere die Buchung von Mentor-Diensten, erfordert eine Registrierung.
+              (1) Die Nutzung bestimmter Funktionen (wie das Absenden von Anfragen, das Führen eines Reisetagebuchs oder die Einsicht in den Buchungsstatus) erfordert ein registriertes Nutzerkonto.
             </p>
             <p>
-              (2) Der Nutzer ist verpflichtet, bei der Registrierung wahrheitsgemäße und vollständige Angaben zu machen und diese aktuell zu halten.
-            </p>
-            <p>
-              (3) Der Nutzer ist für die Geheimhaltung seiner Zugangsdaten verantwortlich.
+              (2) Der Nutzer ist verpflichtet, bei der Registrierung zutreffende Angaben zu machen und die Zugangsdaten vor unbefugtem Zugriff Dritter zu schützen.
             </p>
           </CardContent>
         </Card>
-        
-        {/* Weitere Paragraphen nach Bedarf einfügen, z.B.: */}
-        {/* § 4 Zustandekommen von Verträgen über Mentor-Dienste */}
-        {/* § 5 Zahlungsbedingungen (ggf. in Verbindung mit Stripe) */}
-        {/* § 6 Stornierungsbedingungen */}
-        {/* § 7 Pflichten und Verantwortlichkeiten der Nutzer und Mentoren */}
-        {/* § 8 Haftung des Anbieters */}
-        {/* § 9 Datenschutz (Verweis auf separate Datenschutzerklärung) */}
-        {/* § 10 Änderungen der AGB */}
-        {/* § 11 Schlussbestimmungen */}
 
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-xl text-primary">§ X Haftungsbeschränkung</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
-             <p>
-              Der Anbieter haftet für Vorsatz und grobe Fahrlässigkeit. Ferner haftet der Anbieter für die fahrlässige Verletzung von Pflichten, deren Erfüllung die ordnungsgemäße Durchführung des Vertrages überhaupt erst ermöglicht, deren Verletzung die Erreichung des Vertragszwecks gefährdet und auf deren Einhaltung Sie als Kunde regelmäßig vertrauen dürfen. Im letztgenannten Fall haftet der Anbieter jedoch nur für den vorhersehbaren, vertragstypischen Schaden. Der Anbieter haftet nicht für die leicht fahrlässige Verletzung anderer als der in den vorstehenden Sätzen genannten Pflichten.
-            </p>
-            <p>Die vorstehenden Haftungsausschlüsse gelten nicht bei Verletzung von Leben, Körper und Gesundheit. Die Haftung nach Produkthaftungsgesetz bleibt unberührt.</p>
-          </CardContent>
-        </Card>
-
-         <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-xl text-primary">§ Y Schlussbestimmungen</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-muted-foreground">
-            <p>
-              (1) Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts.
-            </p>
-            <p>
-              (2) Sollten einzelne Bestimmungen dieser AGB unwirksam sein oder werden, bleibt die Wirksamkeit der übrigen Bestimmungen unberührt.
-            </p>
-             <p>
-              (3) Gerichtsstand für alle Streitigkeiten aus Vertragsverhältnissen zwischen dem Kunden und dem Anbieter ist der Sitz des Anbieters, sofern es sich bei dem Kunden um einen Kaufmann, eine juristische Person des öffentlichen Rechts oder ein öffentlich-rechtliches Sondervermögen handelt.
-            </p>
-            <p>Stand: [Datum der letzten Aktualisierung]</p>
-          </CardContent>
-        </Card>
-
+        {/* Status notice */}
+        <div className="rounded-xl border bg-muted/30 p-4 text-xs text-muted-foreground flex items-start gap-2.5">
+          <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            Die AGB befinden sich vor einem öffentlichen kommerziellen Betrieb noch in rechtlicher Prüfung.
+          </p>
+        </div>
       </div>
     </div>
   );

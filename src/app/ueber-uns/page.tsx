@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, ShieldCheck, Heart, MapPin, Award, HeartHandshake } from "lucide-react";
@@ -5,27 +6,38 @@ import Image from "next/image";
 import Link from "next/link";
 import images from "@/lib/placeholder-images.json";
 
+export const metadata: Metadata = {
+  title: "Über uns & Mission",
+  description:
+    "Erfahre mehr über die Mission von Stay Safe & Brave, unser Team und unsere Philosophie für vertrauensvolle, authentische Reisebegleitung in Südafrika.",
+  openGraph: {
+    title: "Über uns & Mission | Stay Safe & Brave",
+    description:
+      "Erfahre mehr über die Mission von Stay Safe & Brave, unser Team und unsere Philosophie für vertrauensvolle, authentische Reisebegleitung in Südafrika.",
+  },
+};
+
 const teamMembers = [
   {
-    name: "Houssam",
-    role: "CTO",
-    imageUrl: images.team.houssam.src,
-    dataAiHint: images.team.houssam.dataAiHint,
-    bio: "technische Entwicklung & Innovation",
-  },
-  {
     name: "Laura",
-    role: "CEO & Visionary ",
+    role: "CEO & Visionary",
     imageUrl: images.team.laura.src,
     dataAiHint: images.team.laura.dataAiHint,
     bio: "Gesamtstrategie, Vision & sozialer Impact",
   },
   {
     name: "Niklas",
-    role: " COO & CMO ",
+    role: "COO & CMO",
     imageUrl: images.team.niklas.src,
     dataAiHint: images.team.niklas.dataAiHint,
-    bio: "Business Development, Sales & Marketing (Geschäftsentwicklung, Vertrieb & Marketing)",
+    bio: "Business Development, Sales & Marketing",
+  },
+  {
+    name: "Houssam",
+    role: "CTO",
+    imageUrl: images.team.houssam.src,
+    dataAiHint: images.team.houssam.dataAiHint,
+    bio: "technische Entwicklung & Innovation",
   },
 ];
 
@@ -62,13 +74,13 @@ export default function UeberUnsPage() {
               <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl mb-6">Unsere Geschichte</h2>
               <div className="space-y-4 text-muted-foreground text-lg">
                 <p>
-                  Stay Safe and Brave wurde aus einer tiefen Liebe zu Südafrika und dem Wunsch geboren, die Schönheit und Vielfalt des Landes auf eine sichere und authentische Weise zugänglich zu machen.
+                  Stay Safe &amp; Brave entstand als Travel-Tech-Projekt mit dem Ziel, Individualreisende in Südafrika mit vertrauenswürdigen Local Mentors zu verbinden.
                 </p>
                 <p>
-                  Wir glauben, dass die besten Reiseerlebnisse durch echte Verbindungen zu lokalen Menschen entstehen. Unsere Mentoren sind nicht nur Guides, sondern Botschafter ihrer Kultur und leidenschaftliche Erzähler.
+                  Wir glauben, dass die besten Reiseerlebnisse durch echte Verbindungen zu lokalen Menschen entstehen. Unsere Mentoren sind nicht nur Begleiter, sondern Botschafter ihrer Region und Kultur.
                 </p>
                 <p>
-                  Sicherheit ist dabei unser oberstes Gebot. Wir wählen unsere Mentoren sorgfältig aus und legen Wert auf umfassende Briefings, damit du dein Abenteuer unbeschwert genießen kannst.
+                  Das Produkt wird technisch weiterentwickelt und als vollständige digitale Plattform ausgebaut.
                 </p>
               </div>
             </div>

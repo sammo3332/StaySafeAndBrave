@@ -1,9 +1,21 @@
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, ShieldCheck, MapPin, Search, CalendarCheck, Smile, Star, MessageCircle, Award } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import images from "@/lib/placeholder-images.json";
+
+export const metadata: Metadata = {
+  title: "Individuell reisen. Lokal begleitet. Sicherer unterwegs.",
+  description:
+    "Verbinde dich mit vertrauenswürdigen Local Mentoren in Südafrika für individuelle Reisebegleitung, verlässliche Orientierung und unvergessliche Erlebnisse in Kapstadt, Johannesburg und darüber hinaus.",
+  openGraph: {
+    title: "Stay Safe & Brave | Individuell reisen. Lokal begleitet. Sicherer unterwegs.",
+    description:
+      "Verbinde dich mit vertrauenswürdigen Local Mentoren in Südafrika für individuelle Reisebegleitung, verlässliche Orientierung und unvergessliche Erlebnisse.",
+  },
+};
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
   <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 bg-card border-transparent hover:border-primary/50 group">
