@@ -46,10 +46,6 @@ service cloud.firestore {
       return resource != null && isOwner(userId);
     }
 
-    /** Checks if the user is either the traveler or the mentor on a booking document. */
-    function isBookingParticipant(data) {
-      return isSignedIn() && (request.auth.uid == data.userId || request.auth.uid == data.mentorId);
-    }
 
     /** Checks if the authenticated user is the mentor linked via private /mentorAuth/{authUid} mapping. */
     function isLinkedMentor(mentorId) {
