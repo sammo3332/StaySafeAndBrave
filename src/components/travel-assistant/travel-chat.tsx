@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { SafeMarkdown } from '@/components/travel-assistant/safe-markdown';
 import { askTravelAssistant, type ChatMessage } from '@/ai/flows/travel-assistant';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
@@ -307,20 +308,11 @@ export function TravelChat() {
                           : 'bg-muted/40 border border-border/70 text-foreground rounded-tl-xs shadow-xs'
                       }`}
                     >
-                      {/* Message Content formatted */}
-                      <div className="space-y-2 whitespace-pre-line break-words">
-                        {message.content.split('\n\n').map((paragraph, pIdx) => {
-                          // Clean bold rendering and lists
-                          if (paragraph.startsWith('### ')) {
-                            return (
-                              <h4 key={pIdx} className="font-semibold text-base text-primary mt-3 mb-1">
-                                {paragraph.replace('### ', '')}
-                              </h4>
-                            );
-                          }
-                          return <p key={pIdx}>{paragraph}</p>;
-                        })}
-                      </div>
+                      {/* Message Content rendered cleanly and safely via SafeMarkdown */}
+                      <SafeMarkdown
+                        content={message.content}
+                        variant={isUser ? 'user' : 'assistant'}
+                      />
 
                       {/* Mentor Handoff Note if contextual */}
                       {!isUser && message.suggestMentorContact && (
