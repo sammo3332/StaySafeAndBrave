@@ -1,87 +1,145 @@
-'use client';
+import { Metadata } from 'next';
+import { TravelChat } from '@/components/travel-assistant/travel-chat';
+import { Sparkles, HeartHandshake, Compass, CheckCircle2, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-import { useState } from 'react';
-import { TravelAssistantForm } from '@/components/travel-assistant/travel-assistant-form';
-import type { TravelTipsOutput } from '@/ai/flows/travel-tips';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lightbulb, AlertTriangle } from 'lucide-react';
+export const metadata: Metadata = {
+  title: 'AI Travel Assistant | Stay Safe & Brave',
+  description: 'Dein digitaler Reisebegleiter für die Vorbereitung – dein Local Mentor bleibt dein persönlicher Ansprechpartner vor Ort.',
+};
 
 export default function TravelAssistantPage() {
-  const [travelTips, setTravelTips] = useState<TravelTipsOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // To manage the display of the results card immediately
-
-  const handleTipsGenerated = (tips: TravelTipsOutput) => {
-    setTravelTips(tips);
-    setIsLoading(false); // Form handles its own loading state for the button
-  };
-  
-  // This function is to re-trigger the loading state for the results card, used by the form.
-  const handleFormSubmit = () => {
-    setIsLoading(true);
-    setTravelTips(null); // Clear previous tips before new ones are generated
-  }
-
   return (
-    <div className="space-y-8 flex flex-col items-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">Dein persönlicher Reiseberater</h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Planst du eine Reise nach Südafrika? Lass unseren KI-Assistenten personalisierte Reisetipps und Sicherheitshinweise nur für dich erstellen.
+    <div className="container mx-auto px-4 py-8 sm:py-12 max-w-5xl space-y-10">
+      {/* 1. Header & Positioning */}
+      <header className="text-center space-y-4 max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Vorbereitung &amp; Reiseplanung</span>
+        </div>
+        
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary">
+          AI Travel Assistant
+        </h1>
+        
+        <p className="text-lg text-muted-foreground font-medium">
+          Unterstützung bei deiner Reisevorbereitung
         </p>
-      </div>
-      
-      <TravelAssistantForm onTipsGenerated={handleTipsGenerated} onFormSubmit={handleFormSubmit} />
+        
+        <div className="p-3.5 rounded-xl bg-muted/50 border border-border text-sm text-foreground/90 max-w-2xl mx-auto shadow-2xs">
+          <p className="flex items-center justify-center gap-2 text-xs sm:text-sm font-medium">
+            <HeartHandshake className="w-4 h-4 text-primary shrink-0" />
+            <span>
+              Dein digitaler Reisebegleiter für die Vorbereitung – dein Local Mentor bleibt dein persönlicher Ansprechpartner vor Ort.
+            </span>
+          </p>
+        </div>
+      </header>
 
-      {travelTips && travelTips.tips && (
-        <Card className="w-full max-w-2xl mx-auto shadow-lg mt-8 animate-fadeIn">
-          <CardHeader>
-            <CardTitle className="text-2xl flex items-center gap-2 text-primary">
-              <Lightbulb className="w-7 h-7" />
-              Personalisierte Reisetipps
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {travelTips.tips.startsWith('Entschuldigung, ein Fehler ist aufgetreten') ? (
-              <div className="flex items-center gap-2 text-destructive">
-                <AlertTriangle className="w-5 h-5" />
-                <p>{travelTips.tips}</p>
+      {/* 2. Visual Distinction: AI Travel Assistant vs. Local Mentor */}
+      <section 
+        id="product-positioning-comparison" 
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"
+        aria-label="Vergleich: AI Travel Assistant vs. Local Mentor"
+      >
+        {/* Card 1: AI Travel Assistant */}
+        <div className="p-5 rounded-xl bg-card border border-border/80 shadow-2xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
               </div>
-            ) : (
-              <div className="prose prose-sm sm:prose-base dark:prose-invert max-w-none whitespace-pre-line">
-                {travelTips.tips.split('\n').map((paragraph, index) => {
-                  if (paragraph.startsWith('### ')) {
-                    return <h3 key={index} className="text-lg font-semibold mt-4 mb-2 text-primary">{paragraph.substring(4)}</h3>;
-                  }
-                  if (paragraph.startsWith('## ')) {
-                    return <h2 key={index} className="text-xl font-semibold mt-5 mb-2 text-primary">{paragraph.substring(3)}</h2>;
-                  }
-                  if (paragraph.startsWith('# ')) {
-                     return <h1 key={index} className="text-2xl font-bold mt-6 mb-3 text-primary">{paragraph.substring(2)}</h1>;
-                  }
-                  if (paragraph.startsWith('* ') || paragraph.startsWith('- ')) {
-                    return <li key={index} className="ml-4">{paragraph.substring(2)}</li>;
-                  }
-                  return <p key={index}>{paragraph}</p>;
-                })}
+              <h2 className="font-semibold text-base text-foreground">AI Travel Assistant</h2>
+            </div>
+            <span className="text-[11px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+              Digitales Tool
+            </span>
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Unterstützt dich bei der eigenständigen Planung vor deiner Abreise:
+          </p>
+
+          <ul className="space-y-1.5 text-xs text-foreground/85">
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+              <span>Routen-Inspiration &amp; grobe Reisedauern</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+              <span>Packlisten, Adapter &amp; Klima-Check</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+              <span>Vorbereitung wichtiger Fragen an deine Mentorin</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Card 2: Local Mentor */}
+        <div className="p-5 rounded-xl bg-primary/5 border border-primary/20 shadow-2xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center">
+                <HeartHandshake className="w-4 h-4" />
               </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-       <style jsx global>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        .prose p { margin-bottom: 0.75em; }
-        .prose ul, .prose ol { margin-left: 1.5em; margin-bottom: 0.75em; list-style-type: disc; }
-        .prose li { margin-bottom: 0.25em; }
-        .prose strong { color: hsl(var(--primary)); }
-        .prose h1, .prose h2, .prose h3 { color: hsl(var(--primary)); }
-      `}</style>
+              <h2 className="font-semibold text-base text-primary">Dein Local Mentor</h2>
+            </div>
+            <span className="text-[11px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+              Mensch vor Ort
+            </span>
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Deine persönliche, geprüfte Vertrauensperson in Südafrika:
+          </p>
+
+          <ul className="space-y-1.5 text-xs text-foreground/85">
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+              <span>Tagesaktuelle Sicherheitslage &amp; Stadtteil-Tipps</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+              <span>Persönliche Begleitung &amp; Ansprechpartnerin</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
+              <span>Authentische Empfehlungen abseits der Massen</span>
+            </li>
+          </ul>
+
+          <div className="pt-1">
+            <Button asChild variant="outline" size="sm" className="w-full text-xs h-7.5 border-primary/30 text-primary hover:bg-primary/10">
+              <Link href="/mentors">
+                <Compass className="w-3.5 h-3.5 mr-1.5" />
+                Geprüfte Local Mentoren entdecken
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Interactive Conversation Area */}
+      <main className="w-full">
+        <TravelChat />
+      </main>
+
+      {/* 4. Secondary Navigation */}
+      <footer className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t text-xs text-muted-foreground max-w-4xl mx-auto">
+        <Link href="/dashboard" className="hover:text-primary transition-colors underline">
+          &larr; Zurück zum Reise-Dashboard
+        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/sicherheitsrichtlinien" className="hover:text-primary transition-colors underline">
+            Sicherheitsrichtlinien
+          </Link>
+          <Link href="/kontakt" className="hover:text-primary transition-colors underline">
+            Kontakt &amp; Support
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }
