@@ -1,0 +1,4 @@
+import {admin,ApiError} from './admin';
+import type {DecodedIdToken} from 'firebase-admin/auth';
+import {bookingSchema,idSchema} from '../commerce/model';
+export async function bookingAccess(user:DecodedIdToken,id:unknown){const parsed=idSchema.safeParse(id);if(!parsed.success)throw new ApiError(400,'Ungültige Buchung.');const db=admin().db;const ref=db.collection('commerceBookings').doc(parsed.data);const raw=(await ref.get()).data();if(!raw)throw new ApiError(404,'Buchung nicht gefunden.');const booking=bookingSchema.parse(raw);const mapping=(await db.collection('mentorAuth').doc(user.uid).get()).data();const role=booking.userId===user.uid?'traveler':mapping?.mentorId===booking.offer.mentorId?'mentor':null;if(!role)throw new ApiError(403,'Kein Zugriff auf diese Buchung.');return {booking,ref,role};}

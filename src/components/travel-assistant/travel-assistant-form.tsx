@@ -67,7 +67,7 @@ export function TravelAssistantForm({ onTipsGenerated, onFormSubmit }: TravelAss
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-lg">
+    <Card className="w-full max-w-2xl mx-auto shadow-sm">
       <CardHeader>
         <CardTitle className="text-2xl flex items-center gap-2 text-primary">
           <Wand2 className="w-7 h-7" />

@@ -1,31 +1,18 @@
-
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-export default function ConfirmationLoading() {
+export default function Loading() {
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-20rem)] text-center">
-        <Card className="w-full max-w-lg shadow-xl p-4 sm:p-8">
-          <CardHeader className="items-center space-y-4">
-            <Skeleton className="h-16 w-16 rounded-full" />
-            <Skeleton className="h-10 w-3/4" />
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-6 w-5/6 mx-auto" />
-            </div>
-             <div className="space-y-3 pt-4">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 mt-6">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-            </div>
-          </CardContent>
-        </Card>
+    <div className="page-shell section-space space-y-8" role="status" aria-label="Seite wird geladen">
+      <span className="sr-only">Seite wird geladen …</span>
+      <div className="max-w-2xl space-y-4" aria-hidden="true">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-12 w-4/5" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-2/3" />
+      </div>
+      <div className="max-w-3xl space-y-4 border-t pt-8" aria-hidden="true">
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <Skeleton className="h-24 w-full rounded-xl" />
       </div>
     </div>
   );

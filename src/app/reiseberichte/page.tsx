@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { WorkspaceNav } from "@/components/layout/workspace-nav";
+import { AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +56,7 @@ export default function DiaryView() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
 
+  const [pendingAction,setPendingAction]=useState<{kind:"delete"|"publish";report:ReportDTO}|null>(null);
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingReportId, setEditingReportId] = useState<string | null>(null);
@@ -302,7 +305,8 @@ export default function DiaryView() {
   });
 
   return (
-    <div className="container mx-auto px-4 max-w-6xl">
+    <div className="workspace-shell">
+      <WorkspaceNav/>
       <div className="space-y-8">
         {/* Header Bar */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b">
@@ -326,11 +330,11 @@ export default function DiaryView() {
 
         {/* Filters & Public Stories Link */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2 bg-muted/60 p-1 rounded-lg border text-xs">
+          <div className="flex flex-wrap items-center gap-2 bg-muted/60 p-1 rounded-lg border text-xs">
             <button
               onClick={() => setFilter("all")}
               className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                filter === "all" ? "bg-background shadow-xs text-foreground" : "text-muted-foreground hover:text-foreground"
+                filter === "all" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Alle ({reports?.length || 0})
@@ -338,7 +342,7 @@ export default function DiaryView() {
             <button
               onClick={() => setFilter("private")}
               className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                filter === "private" ? "bg-background shadow-xs text-foreground" : "text-muted-foreground hover:text-foreground"
+                filter === "private" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Nur Privat ({reports?.filter((r) => (r.visibility || "private") === "private").length || 0})
@@ -346,7 +350,7 @@ export default function DiaryView() {
             <button
               onClick={() => setFilter("public")}
               className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                filter === "public" ? "bg-background shadow-xs text-foreground" : "text-muted-foreground hover:text-foreground"
+                filter === "public" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Als Story geteilt ({reports?.filter((r) => r.visibility === "public").length || 0})
@@ -369,7 +373,7 @@ export default function DiaryView() {
               return (
                 <Card
                   key={report.id}
-                  className="flex flex-col justify-between overflow-hidden rounded-xl border bg-card shadow-xs hover:shadow-md transition-shadow"
+                  className="flex flex-col justify-between overflow-hidden rounded-xl border bg-card shadow-sm hover:shadow-sm transition-shadow"
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-2">
@@ -396,7 +400,7 @@ export default function DiaryView() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                          onClick={() => handleOpenEdit(report)}
+                          aria-label="Eintrag lesen und bearbeiten" onClick={() => handleOpenEdit(report)}
                           title="Bearbeiten"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -405,7 +409,7 @@ export default function DiaryView() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                          onClick={() => handleDeleteReport(report.id)}
+                          aria-label="Eintrag löschen" onClick={() => setPendingAction({kind:"delete",report})}
                           title="Löschen"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -466,7 +470,7 @@ export default function DiaryView() {
                       variant={isPublic ? "outline" : "secondary"}
                       size="sm"
                       className="w-full text-xs h-8"
-                      onClick={() => handleToggleVisibility(report)}
+                      onClick={() => report.visibility === "public" ? handleToggleVisibility(report) : setPendingAction({kind:"publish",report})}
                     >
                       {isPublic ? (
                         <>
@@ -511,7 +515,7 @@ export default function DiaryView() {
 
       {/* Create / Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[560px]">
+        <DialogContent className="sm:max-w-[720px] max-h-[92dvh]">
           <DialogHeader>
             <DialogTitle>
               {editingReportId ? "Reisebericht bearbeiten" : "Neuen Reisetagebuch-Eintrag verfassen"}
@@ -592,7 +596,7 @@ export default function DiaryView() {
               <Textarea
                 id="content"
                 placeholder="Erzähle von deinen Eindrücken, Geheimtipps oder Sicherheits-Empfehlungen..."
-                className="min-h-[160px] leading-relaxed"
+                className="min-h-[240px] text-base leading-relaxed"
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               />
@@ -629,7 +633,7 @@ export default function DiaryView() {
                 </Button>
               </div>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Öffentliche Stories werden unter &bdquo;Travel Stories&ldquo; geteilt. Dein Name und persönliche E-Mail-Adresse werden niemals veröffentlicht.
+                Öffentliche Stories werden unter &bdquo;Travel Stories&ldquo; geteilt. Deine Profildaten werden nicht automatisch im Artikel angezeigt. Prüfe vor dem Teilen, ob dein Text persönliche Angaben enthält.
               </p>
             </div>
 
@@ -637,7 +641,7 @@ export default function DiaryView() {
             <div className="flex items-start gap-2 p-2.5 rounded-lg bg-muted/60 border text-[11px] text-muted-foreground">
               <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
               <span>
-                Bild-Uploads für Reiseberichte werden künftig über den gesicherten Cloud-Speicher bereitgestellt. Aktuell sind Textberichte vollständig verfügbar.
+                Hier kannst du Textberichte verfassen. Ein Bild-Upload ist derzeit nicht verfügbar.
               </span>
             </div>
           </div>
@@ -659,6 +663,7 @@ export default function DiaryView() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <AlertDialog open={Boolean(pendingAction)} onOpenChange={open=>{if(!open)setPendingAction(null);}}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{pendingAction?.kind==='delete'?'Eintrag wirklich löschen?':'Als Travel Story veröffentlichen?'}</AlertDialogTitle><AlertDialogDescription>{pendingAction?.kind==='delete'?'Dieser Eintrag wird gelöscht. Diese Aktion kann hier nicht rückgängig gemacht werden.':'Dein Text wird öffentlich lesbar. Prüfe, ob persönliche Angaben oder private Reisedetails enthalten sind.'}</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Abbrechen</AlertDialogCancel><AlertDialogAction onClick={()=>{if(!pendingAction)return;if(pendingAction.kind==='delete')void handleDeleteReport(pendingAction.report.id);else void handleToggleVisibility(pendingAction.report);setPendingAction(null);}}>{pendingAction?.kind==='delete'?'Löschen':'Öffentlich teilen'}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     </div>
   );
 }

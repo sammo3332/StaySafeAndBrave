@@ -15,25 +15,25 @@ export const metadata: Metadata = {
 
 export default function BookingConfirmationPage() {
   return (
-    <div className="container mx-auto px-4">
+    <div className="page-shell py-10">
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-20rem)] text-center">
-        <Card className="w-full max-w-lg shadow-xl p-4 sm:p-8">
+        <Card className="w-full max-w-lg shadow-sm p-4 sm:p-8">
           <CardHeader className="items-center">
             <div className="p-4 bg-primary/10 rounded-full mb-4 text-primary">
-                <PartyPopper className="w-12 h-12" />
+                <CheckCircle className="w-12 h-12" />
             </div>
             <CardTitle className="text-3xl font-bold text-primary">
-                Buchungsanfrage erfolgreich!
+                Dein Anfragestatus
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-lg text-muted-foreground">
-              Vielen Dank für deine Anfrage! Deine Reisebegleitung mit einem verifizierten Local Mentor wurde sicher übermittelt.
+              Ob deine Anfrage eingegangen ist und welchen Status sie hat, siehst du in deinem persönlichen Reisebereich.
             </p>
             <div className="text-left bg-muted/50 p-4 rounded-lg space-y-2 text-sm">
                 <p className="flex items-start">
                   <CheckCircle className="w-5 h-5 text-primary mr-2 mt-0.5 shrink-0"/>
-                  Deine Buchungsdetails sind in deinem persönlichen Dashboard hinterlegt.
+                  Öffne deine Buchungsübersicht, um vorhandene Anfragen und Details anzusehen.
                 </p>
                 <p className="flex items-start">
                   <CheckCircle className="w-5 h-5 text-primary mr-2 mt-0.5 shrink-0"/>
@@ -48,7 +48,7 @@ export default function BookingConfirmationPage() {
                 </Button>
                  <Button asChild variant="outline" className="w-full" size="lg">
                     <Link href="/mentors">
-                        Weitere Mentoren entdecken
+                        Local Mentoren entdecken
                     </Link>
                 </Button>
             </div>

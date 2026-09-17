@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { MessageSquare, CalendarDays, Loader2, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { ContentImage } from '@/components/ui/content-image';
 import { useRouter } from "next/navigation";
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, query, where } from "firebase/firestore";
@@ -98,10 +98,10 @@ export default function MessagesPage() {
         </Button>
       </div>
 
-      <Card className="shadow-md">
+      <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2 text-primary">
-            <MessageSquare className="w-5 h-5 text-accent" />
+            <MessageSquare className="w-5 h-5 text-muted-foreground" />
             Unterhaltungen {hasConversations && `(${sortedConversations.length})`}
           </CardTitle>
           <CardDescription>
@@ -125,11 +125,10 @@ export default function MessagesPage() {
                     <div className="flex items-start gap-4">
                       <div className="relative w-12 h-12 rounded-full border overflow-hidden bg-muted shrink-0">
                         {mentor?.profilePictureUrl ? (
-                          <Image
+                          <ContentImage
                             src={mentor.profilePictureUrl}
                             alt={mentor.firstName || mentorDisplayName}
-                            fill
-                            className="object-cover"
+                            className="h-full w-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center font-semibold text-muted-foreground">

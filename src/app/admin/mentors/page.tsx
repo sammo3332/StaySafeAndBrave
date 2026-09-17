@@ -91,14 +91,10 @@ export default function AdminMentorsPage() {
         <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="font-semibold text-foreground">
-            Hinweis zur Mentor-Authentifizierung &amp; Provisionierung:
+            Profile und Zugänge
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            Die private Zuordnung zwischen Firebase Auth Konten und Mentor-Profilen erfolgt über{" "}
-            <code className="bg-background px-1 py-0.5 rounded border text-foreground">/mentorAuth/{`{authUid}`}</code>.
-            Um Missbrauch zu verhindern, ist das Auslesen fremder Zuordnungen clientseitig gesperrt.
-            Die Erstellung von Mentor-Login-Konten erfordert ein vertrauenswürdiges Server-Dienstkonto (Firebase Admin SDK).
-            Es werden keine fiktiven Konten oder Verifizierungen erzeugt.
+            Hier kannst du vorhandene Profile und hinterlegte Vertrauensmerkmale prüfen. Die Einrichtung von Mentor-Zugängen erfolgt durch das zuständige Projektteam.
           </p>
         </div>
       </div>

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
-import Image from "next/image";
+import { ContentImage } from '@/components/ui/content-image';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
 import { collection, doc, query, where, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { BookingDTO, MentorDTO, ReviewDTO } from "@/lib/dtos";
@@ -261,7 +261,7 @@ export default function BookingsPage() {
       {/* Active Bookings & Requests */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold text-primary flex items-center gap-2">
-          <CalendarCheck className="w-6 h-6 text-accent" />
+          <CalendarCheck className="w-6 h-6 text-muted-foreground" />
           Aktuelle Buchungen &amp; Anfragen ({activeBookings.length})
         </h2>
         {activeBookings.length > 0 ? (
@@ -281,17 +281,16 @@ export default function BookingsPage() {
               return (
                 <Card
                   key={booking.id}
-                  className="shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
+                  className="shadow-sm hover:shadow-sm transition-shadow duration-300 flex flex-col justify-between"
                 >
                   <div>
                     <CardHeader className="flex flex-row items-start gap-4 p-4">
                       <div className="relative w-[72px] h-[72px] rounded-lg border overflow-hidden bg-muted shrink-0">
                         {mentor?.profilePictureUrl ? (
-                          <Image
+                          <ContentImage
                             src={mentor.profilePictureUrl}
                             alt={mentor.firstName}
-                            fill
-                            className="object-cover"
+                            className="h-full w-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-muted-foreground font-semibold">
@@ -396,7 +395,7 @@ export default function BookingsPage() {
       {/* Past Bookings */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold text-primary flex items-center gap-2">
-          <CalendarX className="w-6 h-6 text-accent" />
+          <CalendarX className="w-6 h-6 text-muted-foreground" />
           Vergangene Buchungen ({pastBookings.length})
         </h2>
         {pastBookings.length > 0 ? (
@@ -415,11 +414,10 @@ export default function BookingsPage() {
                   <CardHeader className="flex flex-row items-start gap-4 p-4">
                     <div className="relative w-[72px] h-[72px] rounded-lg border overflow-hidden bg-muted shrink-0">
                       {mentor?.profilePictureUrl ? (
-                        <Image
+                        <ContentImage
                           src={mentor.profilePictureUrl}
                           alt={mentor.firstName}
-                          fill
-                          className="object-cover"
+                          className="h-full w-full object-cover"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground">

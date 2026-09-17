@@ -180,7 +180,7 @@ export default function MentorMessagesPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-amber-950/90 dark:text-amber-200/90">
             <p className="leading-relaxed">
-              Dein aktuelles Benutzerkonto (<strong>{user.email || user.uid}</strong>) ist keinem Mentor-Profil über die private Autorisierung (<code>/mentorAuth</code>) zugeordnet.
+              Dein Konto ist noch keinem Mentor-Profil zugeordnet. Bitte kontaktiere das Projektteam, um deinen Zugang prüfen zu lassen.
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Hinweis: Die Freischaltung des Mentor-Zugangs erfordert eine administrative Verknüpfung deines Firebase-Kontos mit dem entsprechenden Mentor-Eintrag.
@@ -243,7 +243,7 @@ export default function MentorMessagesPage() {
             return (
               <Card
                 key={conv.id}
-                className="hover:shadow-md transition-shadow duration-200 border overflow-hidden"
+                className="hover:shadow-sm transition-shadow duration-200 border overflow-hidden"
               >
                 <CardContent className="p-5 sm:p-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

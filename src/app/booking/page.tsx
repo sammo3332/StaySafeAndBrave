@@ -1,9 +1,11 @@
 "use client";
+import { usePublicDocument } from '@/hooks/use-public-document';
+import { publicMentor } from '@/components/content/public-data';
 
 import { Suspense, useContext, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { ContentImage } from '@/components/ui/content-image';
 import { CartContext } from "@/context/CartContext";
 import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase";
 import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -49,7 +51,8 @@ function BookingRequestForm() {
     return doc(db, "mentors", mentorId);
   }, [db, mentorId]);
 
-  const { data: mentorData, isLoading: isMentorLoading } = useDoc<MentorDTO>(mentorRef);
+  const { data: rawMentorData, isLoading: isMentorLoading, error: mentorError } = usePublicDocument<unknown>(mentorRef);
+  const mentorData = publicMentor(rawMentorData);
 
   const mentorName = cart?.mentorName || (mentorData 
     ? `${mentorData.firstName || ""} ${mentorData.lastName || ""}`.trim() 
@@ -78,6 +81,21 @@ function BookingRequestForm() {
       });
     }
   }, [cart, packageDef, mentorId, mentorName, addToCart]);
+
+  const draftKey = `${mentorId || ''}:${packageId || ''}`;
+  const [loadedDraftKey,setLoadedDraftKey] = useState<string|null>(null);
+  useEffect(() => {
+    try {
+      const raw=sessionStorage.getItem('ssb_request_draft');
+      const draft=raw ? JSON.parse(raw) : null;
+      if(draft?.key===draftKey){setRequestedStartDate(draft.start||'');setRequestedEndDate(draft.end||'');setTravelerMessage(draft.message||'');}
+    } catch {}
+    setLoadedDraftKey(draftKey);
+  }, [draftKey]);
+  useEffect(() => {
+    if(loadedDraftKey!==draftKey || !mentorId || !packageId)return;
+    try {sessionStorage.setItem('ssb_request_draft',JSON.stringify({key:draftKey,start:requestedStartDate,end:requestedEndDate,message:travelerMessage}));} catch {}
+  },[loadedDraftKey,draftKey,mentorId,packageId,requestedStartDate,requestedEndDate,travelerMessage]);
 
   // Today's date string for input min attribute
   const todayStr = new Date().toISOString().split("T")[0];
@@ -156,6 +174,7 @@ function BookingRequestForm() {
         description: `Deine Anfrage für Paket ${packageName} wurde erfolgreich übermittelt.`,
       });
 
+      try { sessionStorage.removeItem("ssb_request_draft"); } catch {}
       // Clear cart context
       clearCart();
 
@@ -188,7 +207,7 @@ function BookingRequestForm() {
               Kein Local Mentor ausgewählt
             </CardTitle>
             <CardDescription className="text-muted-foreground pt-1">
-              Stay Safe &amp; Brave bietet persönliche Begleitung durch geprüfte Local Mentors. Wähle deinen passenden Mentor aus, um eine Buchungsanfrage zu starten.
+              Stay Safe &amp; Brave bietet persönliche Begleitung durch Local Mentoren. Wähle deinen passenden Mentor aus, um eine Buchungsanfrage zu starten.
             </CardDescription>
           </CardHeader>
           <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
@@ -242,7 +261,8 @@ function BookingRequestForm() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
+    <div className="page-shell py-10 max-w-3xl">
+      <p className="eyebrow mb-6">Deine Anfrage · Zeitraum & Wünsche</p>
       {/* Back button */}
       <div className="mb-6">
         <Link
@@ -254,8 +274,8 @@ function BookingRequestForm() {
         </Link>
       </div>
 
-      <header className="mb-8 text-center sm:text-left">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary">
+      <header className="mb-8 text-left">
+        <h1 className="editorial-title page-title">
           Buchungsanfrage senden
         </h1>
         <p className="mt-2 text-base text-muted-foreground">
@@ -263,15 +283,16 @@ function BookingRequestForm() {
         </p>
       </header>
 
+      {mentorError && <p role="alert" className="mb-6 rounded-xl border p-4 text-sm">Das Profil konnte gerade nicht geladen werden. Bitte prüfe es vor deiner Anfrage erneut in der Mentorensuche.</p>}
       {/* Transparency Note */}
-      <div className="mb-8 p-4 rounded-lg bg-primary/5 border border-primary/20 flex items-start gap-3 shadow-xs">
+      <div className="mb-8 p-4 rounded-lg bg-primary/5 border border-primary/20 flex items-start gap-3 shadow-sm">
         <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
         <div className="text-sm text-muted-foreground leading-relaxed">
           <p className="font-semibold text-foreground mb-0.5">
             Dies ist zunächst eine Buchungsanfrage. Dein Local Mentor muss die Anfrage noch bestätigen.
           </p>
           <p>
-            Stay Safe &amp; Brave ist keine Gruppen- oder Pauschaltour-Plattform. Wir vermitteln selbstbestimmten Reisenden einen verlässlichen persönlichen Local Mentor vor Ort.
+            Umfang und Preis sind noch in Abstimmung. Mit dieser Anfrage wird keine Zahlung ausgelöst.
           </p>
         </div>
       </div>
@@ -289,11 +310,9 @@ function BookingRequestForm() {
             <div className="flex items-center justify-between p-3.5 rounded-md bg-muted/40 border border-border/60">
               <div className="flex items-center gap-3">
                 {mentorData?.profilePictureUrl ? (
-                  <Image
+                  <ContentImage
                     src={mentorData.profilePictureUrl}
                     alt={mentorName || "Mentor"}
-                    width={48}
-                    height={48}
                     className="w-12 h-12 rounded-full object-cover border border-border shrink-0"
                   />
                 ) : (
@@ -412,7 +431,7 @@ function BookingRequestForm() {
 
         {/* Validation error notice if present */}
         {validationError && (
-          <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive flex items-start gap-3 text-sm">
+          <div role="alert" className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive flex items-start gap-3 text-sm">
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
             <span>{validationError}</span>
           </div>
@@ -426,7 +445,7 @@ function BookingRequestForm() {
               <div>
                 <p className="font-semibold">Anmeldung erforderlich</p>
                 <p className="text-xs text-amber-800">
-                  Um die Buchungsanfrage verbindlich abzusenden und in deinem Dashboard zu verfolgen, melde dich bitte an.
+                  Um deine Buchungsanfrage abzusenden und in deinem Dashboard zu verfolgen, melde dich bitte an.
                 </p>
               </div>
             </div>
@@ -467,7 +486,7 @@ function BookingRequestForm() {
             className="w-full sm:w-auto"
           >
             <Link href="/warenkorb">
-              Zum Warenkorb
+              Zur Auswahl
             </Link>
           </Button>
         </div>

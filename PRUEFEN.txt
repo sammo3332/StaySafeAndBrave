@@ -1,0 +1,79 @@
+AKTUELL: Redaktioneller Produktpass — PORTFOLIO_QUALITY.md
+Ueberarbeitete Texte; neue Umbrueche bitte auf Desktop und Mobilgeraet pruefen.
+
+NEU: ZAHLUNGSMETHODEN — PAYMENT_METHODS.md
+In /demo und /en/demo: Karte, PayPal, Apple Pay und Google Pay auswaehlbar.
+Die Auswahl bleibt beim Neuladen erhalten und steht nach Erfolg im Demo-Beleg.
+Es werden keine echten Zahlungsdaten abgefragt und keine Zahlungen ausgefuehrt.
+
+AKTUELLER AUSBAU: PRODUCT_EXPANSION.md
+Neu: /demo mit Premium-Services und Mentor-Gegenansicht, /mitmachen,
+/reiseunterlagen, /en und /en/demo. Echte Serverprozesse bleiben standardmaessig aus.
+Konfiguration: SERVER_CONFIG.example.txt. Keine echten Zugangsdaten in den Chat senden.
+
+STAY SAFE & BRAVE — VOLLSTAENDIGES PROJEKT MIT BUCHUNGSDEMO
+
+Dies ist das vollstaendige Projekt mit den bisherigen Redesign-Aenderungen und dem Polish-Pass und den Original-Markenbildern. Es ist kein Patch-Ordner.
+
+1. ZIP in einen neuen separaten Ordner entpacken.
+2. PowerShell in dem Ordner oeffnen, der package.json und diese Datei enthaelt.
+3. Falls erforderlich, die eigene vorhandene .env.local uebernehmen. Keine Zugangsdaten an den Chat senden.
+4. Befehle nacheinander ausfuehren:
+
+npm install --no-package-lock
+$env:NEXT_IGNORE_INCORRECT_LOCKFILE = "1"
+.\node_modules\.bin\next.cmd dev -p 3005 -H 127.0.0.1
+
+5. Nach "Ready" http://127.0.0.1:3005/ oeffnen. Ist 3005 bereits belegt, den bisherigen Testserver mit Strg+C stoppen oder eine freie Portnummer einsetzen.
+
+Die direkte next.cmd-Ausfuehrung nutzt die im Projekt installierte Version und laedt keine andere Next-Version ueber npx nach.
+
+
+NEU: DEMO IN ETWA 5 MINUTEN
+Nach dem Start direkt http://127.0.0.1:3005/demo oeffnen.
+
+1. Nomusa in Kapstadt beibehalten und Standard (fiktiv 195 Euro) auswaehlen.
+2. Reisedaten ergaenzen. Anna und zukuenftige Daten sind vorausgefuellt.
+3. In den Demo-Warenkorb legen und Auswahl pruefen.
+4. Zur Demo-Zahlung: eine Zahlungsmethode waehlen, dann zuerst "Zahlung abgelehnt" waehlen, Demo-Hinweis bestaetigen und simulieren. Es muss eine Fehlermeldung erscheinen und die Auswahl erhalten bleiben.
+5. Eine andere Zahlungsmethode waehlen: Fehlermeldung muss verschwinden. Demo-Hinweis erneut bestaetigen, "Zahlung erfolgreich" waehlen und erneut versuchen.
+6. Bestaetigung ansehen, Demo-Beleg herunterladen, Nachrichtenvorschau lesen. Gewaehlte Zahlungsmethode muss in Bestaetigung und Beleg uebereinstimmen.
+7. "Meine Reise" oeffnen: Checkliste abhaken, Kennenlerntermin vormerken, Demo-Nachricht schreiben.
+8. Seite neu laden: bestaetigte Reise, Checkliste, Termin und Chat muessen erhalten bleiben (sofern Browserspeicher erlaubt).
+9. Oben "Neu beginnen" oeffnen und "Demo zuruecksetzen" waehlen.
+
+Zusaetzlich testen: leeren Warenkorb, Zahlung abbrechen, Paket entfernen, Daten aendern, direkt /demo/bestaetigung ohne Zahlung oeffnen (darf keinen Erfolg zeigen), andere Beispielprofile waehlen.
+
+Keine echten Zahlungsdaten oder E-Mail-Adressen noetig. Alle neun Mentorprofile und alle Preise in /demo sind fiktiv. Keine Abbuchungen, Buchungen, E-Mails oder Mentor-Nachrichten werden aus der Demo ausgeloest. Der Rest der bestehenden Anwendung kann weiterhin mit Firebase verbunden sein.
+
+Neue Funktions- und Pruefdokumentation: DEMO_PLAN.md
+Entwicklerpruefung: npm run test:workflows
+Typecheck separat, NICHT gleichzeitig mit Build: npm run typecheck -- --incremental false
+
+Weitere Seiten zu pruefen:
+/ — Hero, einheitliche Mentorprofile oder ehrlicher Leerzustand
+/mentors — Laden, Fehler, leere Liste und Filter ohne Treffer unterscheiden
+/mentors/<echte-ID> — nur ein tatsaechlich verfuegbares Profil verwenden
+/stories — Datenfehler duerfen die Anwendung nicht zum Absturz bringen
+/stories/<echte-ID> — Ladefehler und nicht gefundene Story unterscheiden
+/pakete-preise — realen Angebotsstand und separaten Einstieg zur gekennzeichneten Demo pruefen
+/ueber-uns — verifizierte Teamrollen
+/kontakt — Formular und Fehlerdarstellung
+/travel-assistant — erreichbarer Chat und lesbare Hinweise
+/booking — Anfragekontext aus einem echten verfuegbaren Profil
+
+Mobile Sichtpruefung: Browser-Entwicklertools, Geraetesymbol einschalten und nacheinander 320, 390, 768 und 1024 Pixel einstellen. Header/Menue, Hero-Umbrueche, Buttons, leere Zustände, Footer, Storytext, Kontaktfelder und Dialoghoehen kontrollieren. Diese manuelle Sichtpruefung konnte in der Chat-Umgebung nicht abgeschlossen werden.
+
+Das Projekt bleibt mit der bestehenden Firebase-Konfiguration verbunden. Formulare nicht testweise absenden, wenn dadurch unerwuenschte echte Anfragen oder Nachrichten entstehen.
+
+Aktueller Bildbericht: VISUAL_ASSETS.md
+Vorheriger Funktionsbericht: PRODUCTION_POLISH_REPORT.md
+
+Aktueller Designstand: WITHLOCALS_DESIGN_PASS.md
+Hero-Suche: Kapstadt, Johannesburg und Durban auswaehlen, Suchen druecken und Ortsfilter auf /mentors pruefen. Ohne Auswahl werden alle Mentoren gesucht.
+
+Erweiterte Startseite: Themenfilter Stadt & Kultur (2 Bilder), Kueste & Meer (2 Bilder), Natur entdecken (1 Bild), Alle Eindruecke (5 Bilder) pruefen. Fokus per Tab und Auswahl per Enter/Leertaste kontrollieren. Team-CTA muss /ueber-uns oeffnen, Planung und Stories muessen zu den bestehenden Seiten fuehren.
+
+Original-Mentorprofile: Auf / drei gekennzeichnete Beispiele, auf /mentors neun Beispiele kontrollieren. Der separate Stadtfilter zeigt je drei Beispiele. /mentors?location=Kapstadt soll nach dem Laden die Kapstadt-Beispiele waehlen. Jedes Profil muss als fiktiv erkennbar sein; kein Beispiel darf zu einer echten Buchung oder Zahlung fuehren; der ausdruecklich gekennzeichnete Demo-Einstieg ist vorgesehen. Herkunft: ORIGINAL_MENTORS.md.
+
+Interne Profile: Auf der Startseite oder /mentors „Profil ansehen“ anklicken. Alle neun Profile oeffnen sich innerhalb dieser Anwendung unter /mentors/profil/<name>. Sprachen, Vorstellung, Interessen und Begleitungsleistungen pruefen. Ruecklink soll die passende Stadt in der Uebersicht waehlen. Verwandte Profile derselben Stadt muessen intern erreichbar sein. Keine Links zur alten Website im Mentorbereich.

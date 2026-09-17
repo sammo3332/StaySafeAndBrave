@@ -3,11 +3,11 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Travel Stories aus Südafrika',
   description:
-    'Echte Reiseberichte und Erlebnisse von Reisenden, die Südafrika selbstbestimmt und sicher mit unseren Local Mentoren bereist haben.',
+    'Echte Reiseberichte und Erlebnisse von Reisenden, die Südafrika selbstbestimmt bereist haben.',
   openGraph: {
     title: 'Travel Stories aus Südafrika | Stay Safe & Brave',
     description:
-      'Echte Reiseberichte und Erlebnisse von Reisenden, die Südafrika selbstbestimmt und sicher mit unseren Local Mentoren bereist haben.',
+      'Echte Reiseberichte und Erlebnisse von Reisenden, die Südafrika selbstbestimmt bereist haben.',
   },
 };
 

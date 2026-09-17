@@ -12,7 +12,7 @@ export default function SettingsLoading() {
       </div>
 
       {/* Profile Settings Skeleton */}
-      <Card className="shadow-lg">
+      <Card className="shadow-sm">
         <CardHeader className="space-y-2">
           <Skeleton className="h-8 w-1/3" /> {/* Card Title */}
           <Skeleton className="h-5 w-1/2" /> {/* Card Description */}
@@ -50,7 +50,7 @@ export default function SettingsLoading() {
       <Separator />
 
       {/* Password Settings Skeleton */}
-      <Card className="shadow-lg">
+      <Card className="shadow-sm">
         <CardHeader className="space-y-2">
           <Skeleton className="h-8 w-1/3" /> {/* Card Title */}
           <Skeleton className="h-5 w-1/2" /> {/* Card Description */}
@@ -75,7 +75,7 @@ export default function SettingsLoading() {
       <Separator />
 
       {/* Notification Settings Skeleton */}
-      <Card className="shadow-lg">
+      <Card className="shadow-sm">
         <CardHeader className="space-y-2">
           <Skeleton className="h-8 w-1/3" /> {/* Card Title */}
           <Skeleton className="h-5 w-1/2" /> {/* Card Description */}

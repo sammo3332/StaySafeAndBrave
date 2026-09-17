@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function ImpressumPage() {
   return (
-    <div className="container mx-auto px-4">
+    <div className="legal-document">
       <div className="space-y-8 max-w-3xl mx-auto">
         <header className="text-center py-8">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
@@ -20,10 +20,10 @@ export default function ImpressumPage() {
           </p>
         </header>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2 text-primary">
-              <FileText className="w-6 h-6 text-accent" />
+              <FileText className="w-6 h-6 text-muted-foreground" />
               Angaben gemäß § 5 TMG
             </CardTitle>
           </CardHeader>
@@ -46,7 +46,7 @@ export default function ImpressumPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2 text-primary">
               Haftungsausschluss (Disclaimer)

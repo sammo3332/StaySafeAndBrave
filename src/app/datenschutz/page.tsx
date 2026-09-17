@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function DatenschutzPage() {
   return (
-    <div className="container mx-auto px-4">
+    <div className="legal-document">
       <div className="space-y-8 max-w-3xl mx-auto">
         <header className="text-center py-8">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
@@ -20,10 +20,10 @@ export default function DatenschutzPage() {
           </p>
         </header>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2 text-primary">
-              <ShieldCheck className="w-6 h-6 text-accent" />
+              <ShieldCheck className="w-6 h-6 text-muted-foreground" />
               Verantwortliche Stelle
             </CardTitle>
           </CardHeader>
@@ -41,7 +41,7 @@ export default function DatenschutzPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl text-primary">Bereitstellung der Webanwendung &amp; Server-Infrastruktur</CardTitle>
           </CardHeader>
@@ -52,7 +52,7 @@ export default function DatenschutzPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl text-primary">Eingesetzte Plattformdienste &amp; technische Komponenten</CardTitle>
           </CardHeader>
@@ -99,7 +99,7 @@ export default function DatenschutzPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl text-primary">Rechte der betroffenen Personen</CardTitle>
           </CardHeader>

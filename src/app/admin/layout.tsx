@@ -124,16 +124,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
             Das angemeldete Benutzerkonto ({user.email || user.uid}) ist nicht als Administrator autorisiert.
           </p>
-          <div className="bg-muted/50 text-xs text-muted-foreground p-3 rounded-lg border mb-6 text-left space-y-1">
-            <p className="font-semibold text-foreground">Sicherheitsanforderung:</p>
-            <p>
-              Zugriff auf /admin erfordert einen gültigen Firestore-Eintrag in{" "}
-              <code className="bg-background px-1 py-0.5 rounded border text-foreground">
-                /adminAuth/{user.uid}
-              </code>{" "}
-              mit der Rolle <code className="bg-background px-1 py-0.5 rounded border text-foreground">role: &quot;admin&quot;</code>.
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground mb-6">Wenn du für die Administration zuständig bist, wende dich an das Projektteam, um deinen Zugang prüfen zu lassen.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button variant="outline" asChild>
               <Link href="/dashboard">Zum Benutzer-Dashboard</Link>
@@ -149,6 +140,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // Authorized Admin Layout
   const navItems = [
+    { href: "/admin/operations", label: "Betrieb & Freigaben", icon: CalendarCheck, exact: false },
     {
       href: "/admin",
       label: "Übersicht",
@@ -176,7 +168,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   ];
 
   return (
-    <div className="container mx-auto px-4 max-w-7xl py-8 space-y-6">
+    <div className="workspace-shell space-y-6">
       {/* Admin Header Bar */}
       <header className="border-b pb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

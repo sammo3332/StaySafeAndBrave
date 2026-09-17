@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { Turnstile } from "@/components/product/turnstile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,8 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, MessageSquare, Send, MapPinIcon, Building, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import Image from "next/image";
-import images from "@/lib/placeholder-images.json";
+
+
 
 const contactFormSchema = z.object({
   name: z.string().trim().min(2, "Name muss mindestens 2 Zeichen lang sein.").max(100, "Name darf maximal 100 Zeichen lang sein."),
@@ -33,6 +34,9 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export default function KontaktPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [token,setToken]=useState('');
+  const [attempt,setAttempt]=useState(0);
+  const onToken=useCallback((t:string)=>setToken(t),[]);
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -52,7 +56,7 @@ export default function KontaktPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({...data,token}),
       });
 
       const result = await res.json();
@@ -68,7 +72,7 @@ export default function KontaktPage() {
 
       toast({
         title: "Nachricht gesendet!",
-        description: result.message || "Vielen Dank für deine Kontaktaufnahme. Wir melden uns bald bei dir.",
+        description: result.message || "Vielen Dank. Deine Nachricht wurde übermittelt.",
       });
       form.reset();
     } catch (err: any) {
@@ -79,36 +83,26 @@ export default function KontaktPage() {
         description: "Die Verbindung zum Server ist fehlgeschlagen. Bitte prüfe deine Internetverbindung und versuche es erneut.",
       });
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false);setToken('');setAttempt(n=>n+1);
     }
   }
 
   return (
     <>
-      <section className="w-full mb-12">
-        <Image
-          src={images.general.contactHeader.src}
-          alt="Contact Brave Guides"
-          data-ai-hint={images.general.contactHeader.dataAiHint}
-          width={1200}
-          height={400}
-          className="w-full h-auto object-cover shadow-lg"
-        />
-      </section>
-      <div className="container mx-auto px-4">
+      <div className="page-shell py-12">
         <div className="space-y-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-              Kontaktiere Uns
+            <h1 className="editorial-title page-title">
+              Lass uns sprechen.
             </h1>
             <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-              Hast du Fragen, Anregungen oder möchtest du eine individuelle Tour anfragen?
+              Hast du Fragen zur persönlichen Begleitung oder zur Plattform?
               Wir freuen uns auf deine Nachricht!
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            <Card className="shadow-lg">
+            <Card className="shadow-sm">
               <CardHeader>
                 <CardTitle className="text-2xl text-primary flex items-center gap-2">
                   <MessageSquare className="w-7 h-7" />
@@ -178,9 +172,10 @@ export default function KontaktPage() {
                         </FormItem>
                       )}
                     />
+                    <Turnstile key={attempt} onToken={onToken}/>
                     <Button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !token}
                       className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                       {isSubmitting ? (
@@ -190,7 +185,7 @@ export default function KontaktPage() {
                         </>
                       ) : (
                         <>
-                          <Send className="w-4 h-4 mr-2" /> Nachricht Senden
+                          <Send className="w-4 h-4 mr-2" /> Nachricht senden
                         </>
                       )}
                     </Button>
@@ -200,51 +195,21 @@ export default function KontaktPage() {
             </Card>
 
             <div className="space-y-8">
-              <Card className="shadow-lg">
+              <Card className="shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-xl text-primary">Direkter Kontakt</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-accent" />
-                    <a href="mailto:info@staysafeandbrave.de" className="text-muted-foreground hover:text-primary">
-                      info@staysafeandbrave.de
+                    <Mail className="w-5 h-5 text-muted-foreground" />
+                    <a href="mailto:info@staysafeandbrave.com" className="text-muted-foreground hover:text-primary">
+                      info@staysafeandbrave.com
                     </a>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-5 h-5 text-accent" />
-                    <span className="text-muted-foreground">+49 123 4567890 (Platzhalter)</span>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-xl text-primary">Unser Standort</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="flex items-center gap-3">
-                        <Building className="w-5 h-5 text-accent" />
-                        <p className="text-muted-foreground">Stay Safe and Brave HQ (Beispiel)</p>
-                    </div>
-                     <div className="flex items-center gap-3">
-                        <MapPinIcon className="w-5 h-5 text-accent" />
-                        <p className="text-muted-foreground">Musterstraße 1, 12345 Musterstadt, Deutschland</p>
-                    </div>
-                    <div className="mt-4 aspect-video">
-                        <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.998035404006!2d2.292292615674088!3d48.85837007928754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e66e2964e34e2d%3A0x8ddca9ee380ef7e0!2sEiffel%20Tower!5e0!3m2!1sen!2sde!4v1620000000000!5m2!1sen!2sde" 
-                            width="100%" 
-                            height="100%" 
-                            style={{ border:0, borderRadius: '0.5rem' }} 
-                            allowFullScreen={false} 
-                            loading="lazy" 
-                            title="Beispielkarte Eiffelturm"
-                            referrerPolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
-                </CardContent>
-              </Card>
+              <div className="border-t pt-6"><h2 className="text-xl">Worum geht es?</h2><p className="mt-3 text-sm leading-relaxed text-muted-foreground">Beschreibe kurz dein Anliegen. Für bestehende Anfragen findest du den Austausch mit deinem Mentor in deinem Reisebereich.</p><a href="/dashboard/messages" className="quiet-link mt-4 text-sm">Zu meinen Nachrichten</a></div>
             </div>
           </div>
         </div>

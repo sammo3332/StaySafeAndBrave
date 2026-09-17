@@ -1,0 +1,2 @@
+export const featureEnglish: Record<string,string>={infopaket:'Travel workbook',ki:'AI local mentor simulation',kennenlernen:'Introductory video call',kontakt:'Personal contact',getready:'Get-ready call',ankunft:'Airport welcome',treffen:'Personal meeting',tour:'Sightseeing tour',austausch:'Daily check-in'};
+export const citiesEnglish: Record<string,string>={Kapstadt:'Cape Town',Johannesburg:'Johannesburg',Durban:'Durban'};

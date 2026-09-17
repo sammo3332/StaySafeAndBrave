@@ -17,7 +17,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { ContentImage } from '@/components/ui/content-image';
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, useAuth } from "@/firebase";
 import { doc, collection, query, where } from "firebase/firestore";
 import { useRouter } from "next/navigation";
@@ -155,38 +155,12 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      <Card className="shadow-md overflow-hidden">
-        <CardHeader className="bg-muted/30 p-6 flex flex-col md:flex-row items-center gap-6">
-          <div className="relative w-20 h-20 rounded-full border-2 border-primary shadow-sm overflow-hidden bg-background flex items-center justify-center">
-            {userData?.profilePictureUrl ? (
-              <Image 
-                src={userData.profilePictureUrl} 
-                alt={userData.firstName || "Profilbild"} 
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <UserCircle className="w-14 h-14 text-muted-foreground" />
-            )}
-          </div>
-          <div className="text-center md:text-left">
-            <CardTitle className="text-2xl text-primary">
-              {userData?.firstName ? `${userData.firstName} ${userData?.lastName || ""}`.trim() : "Traveler"}
-            </CardTitle>
-            <CardDescription className="text-base">{userData?.email || user.email}</CardDescription>
-            <CardDescription className="text-sm">
-              Mitglied seit: {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString("de-DE", { month: "long", year: "numeric" }) : "Kürzlich beigetreten"}
-            </CardDescription>
-          </div>
-        </CardHeader>
-      </Card>
-
       {/* Real Booking Overview / Truthful Summary */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-2xl font-semibold text-primary flex items-center gap-2">
-            <CalendarDays className="w-6 h-6 text-accent" />
-            Deine Reisebegleitungen &amp; Anfragen
+            <CalendarDays className="w-6 h-6 text-muted-foreground" />
+            Deine nächsten Schritte
           </h2>
           {hasBookings && (
             <Button asChild variant="ghost" size="sm" className="text-primary hover:text-primary/80">
@@ -198,22 +172,21 @@ export default function DashboardPage() {
         </div>
 
         {hasBookings ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {bookings.map((booking) => {
               const mentor = getMentor(booking.mentorId);
               const mentorDisplayName = booking.mentorName || (mentor ? `${mentor.firstName} ${mentor.lastName}`.trim() : "Local Mentor");
               const packageDisplayName = booking.packageName ? `Paket ${booking.packageName}` : "Persönliche Reisebegleitung";
 
               return (
-                <Card key={booking.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">
+                <Card key={booking.id} className="shadow-sm hover:shadow-sm transition-shadow duration-300">
                   <CardHeader className="flex flex-row items-start gap-4 p-4">
                     <div className="relative w-14 h-14 rounded-lg border overflow-hidden bg-muted shrink-0">
                       {mentor?.profilePictureUrl ? (
-                        <Image
+                        <ContentImage
                           src={mentor.profilePictureUrl}
                           alt={mentor.firstName}
-                          fill
-                          className="object-cover"
+                          className="h-full w-full object-cover"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground font-semibold">
@@ -273,7 +246,7 @@ export default function DashboardPage() {
               </div>
               <CardTitle className="text-xl text-primary">Noch keine Buchungen vorhanden</CardTitle>
               <CardDescription className="text-base text-muted-foreground">
-                Du hast aktuell noch keine Reisebegleitung angefragt. Finde einen geprüften Local Mentor für deine nächste Reise.
+                Du hast aktuell noch keine Reisebegleitung angefragt. Finde einen Local Mentor für deine nächste Reise.
               </CardDescription>
               <Button asChild className="mt-2 bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href="/mentors">Local Mentor finden</Link>
@@ -288,11 +261,11 @@ export default function DashboardPage() {
         <h2 className="text-xl font-semibold text-primary">Schnellzugriff</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* 1. Bookings */}
-          <Card className="shadow hover:shadow-md transition-shadow">
+          <Card className="shadow hover:shadow-sm transition-shadow">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <CardTitle className="text-lg text-primary">Meine Buchungen</CardTitle>
-                <CalendarDays className="w-5 h-5 text-accent" />
+                <CalendarDays className="w-5 h-5 text-muted-foreground" />
               </div>
               <CardDescription className="text-sm">
                 Alle Anfragen und Mentor-Sitzungen im Detail verwalten.
@@ -306,11 +279,11 @@ export default function DashboardPage() {
           </Card>
 
           {/* 2. Messages */}
-          <Card className="shadow hover:shadow-md transition-shadow">
+          <Card className="shadow hover:shadow-sm transition-shadow">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <CardTitle className="text-lg text-primary">Nachrichten</CardTitle>
-                <MessageCircle className="w-5 h-5 text-accent" />
+                <MessageCircle className="w-5 h-5 text-muted-foreground" />
               </div>
               <CardDescription className="text-sm">
                 Direkter Austausch mit deinen Local Mentoren.
@@ -324,11 +297,11 @@ export default function DashboardPage() {
           </Card>
 
           {/* 3. Travel Journal / Reports */}
-          <Card className="shadow hover:shadow-md transition-shadow">
+          <Card className="shadow hover:shadow-sm transition-shadow">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <CardTitle className="text-lg text-primary">Reisetagebuch</CardTitle>
-                <BookOpen className="w-5 h-5 text-accent" />
+                <BookOpen className="w-5 h-5 text-muted-foreground" />
               </div>
               <CardDescription className="text-sm">
                 Persönliche Reiseberichte und Notizen festhalten.
@@ -342,11 +315,11 @@ export default function DashboardPage() {
           </Card>
 
           {/* 4. Settings */}
-          <Card className="shadow hover:shadow-md transition-shadow">
+          <Card className="shadow hover:shadow-sm transition-shadow">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <CardTitle className="text-lg text-primary">Profileinstellungen</CardTitle>
-                <UserCircle className="w-5 h-5 text-accent" />
+                <UserCircle className="w-5 h-5 text-muted-foreground" />
               </div>
               <CardDescription className="text-sm">
                 Persönliche Daten und Kontoeinstellungen bearbeiten.

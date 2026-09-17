@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { checkPublicForm } from "@/lib/server/engagement";
+import { fail } from "@/lib/server/admin";
 import { sendTransactionalEmail } from "@/lib/server/email";
 
 const contactSchema = z.object({
@@ -25,6 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { name, email, subject, message } = parseResult.data;
+    await checkPublicForm(body.token, email);
 
     // Destination comes strictly from server configuration (CONTACT_EMAIL_TO), never from client
     const operationalRecipient = process.env.CONTACT_EMAIL_TO;
@@ -87,14 +90,7 @@ ${message}
       { status: 200 }
     );
   } catch (err: any) {
-    console.error("Error processing contact form submission:", err);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Ein interner Serverfehler ist aufgetreten. Bitte versuche es später erneut.",
-      },
-      { status: 500 }
-    );
+    return fail(err);
   }
 }
 

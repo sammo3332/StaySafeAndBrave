@@ -1,17 +1,19 @@
-
 'use client';
+import { OriginalMentorExamples } from '@/components/mentors/original-mentor-examples';
+import { usePublicMentors } from '@/hooks/use-public-mentors';
+import { MentorEmptyState } from '@/components/mentors/mentor-empty-state';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { MentorCard } from '@/components/mentors/mentor-card';
 import { MentorFilters, type MentorFilterValues } from '@/components/mentors/mentor-filters';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore,  useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import type { MentorDTO } from '@/lib/dtos';
 import { Loader2, SearchX, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function MentorsPage() {
-  const db = useFirestore();
+  const { mentors: activeMentors, isLoading, error } = usePublicMentors();
   const [filters, setFilters] = useState<MentorFilterValues>({
     searchTerm: '',
     location: '',
@@ -19,18 +21,7 @@ export default function MentorsPage() {
     language: '',
   });
 
-  const mentorsRef = useMemoFirebase(() => {
-    if (!db) return null;
-    return collection(db, 'mentors');
-  }, [db]);
-
-  const { data: mentors, isLoading } = useCollection<MentorDTO>(mentorsRef);
-
-  // Backward-compatible active check: exclude only if explicitly set to false
-  const activeMentors = useMemo(() => {
-    if (!mentors) return [];
-    return mentors.filter((mentor) => mentor.active !== false);
-  }, [mentors]);
+  useEffect(() => { const location = new URLSearchParams(window.location.search).get('location'); if (location) setFilters(f => ({...f, location})); }, []);
 
   const filteredMentors = useMemo(() => {
     if (!activeMentors) return [];
@@ -109,9 +100,13 @@ export default function MentorsPage() {
 
   const handleFilterChange = (newFilters: MentorFilterValues) => {
     setFilters(newFilters);
+    const url = new URL(window.location.href);
+    if(newFilters.location) url.searchParams.set('location',newFilters.location); else url.searchParams.delete('location');
+    window.history.replaceState(null,'',url);
   };
 
   const handleResetFilters = () => {
+    const url = new URL(window.location.href); url.searchParams.delete('location'); window.history.replaceState(null,'',url);
     setFilters({
       searchTerm: '',
       location: '',
@@ -125,19 +120,18 @@ export default function MentorsPage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="page-shell py-10 sm:py-14">
       <div className="space-y-8">
         <header className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary">
+          <h1 className="editorial-title page-title">
             Triff deine Local Mentoren
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground max-w-3xl leading-relaxed">
-            Finde geprüfte Einheimische in Südafrika, die dir vor und während deiner Reise
-            mit verlässlichem Wissen, Sicherheitstipps und echten Geheimtipps zur Seite stehen.
+            Entdecke Menschen vor Ort, ihre Interessen und ihre Perspektiven. Finde deinen persönlichen Kontakt für die Vorbereitung und Begleitung deiner Südafrika-Reise.
           </p>
         </header>
 
-        <section aria-label="Filteroptionen">
+        {activeMentors.length > 0 && <section aria-label="Filteroptionen">
           <MentorFilters
             locations={uniqueLocations}
             expertises={uniqueExpertises}
@@ -148,9 +142,9 @@ export default function MentorsPage() {
             onFilterChange={handleFilterChange}
             onReset={handleResetFilters}
           />
-        </section>
+        </section>}
 
-        {isLoading ? (
+        {error ? (<div role="alert" className="rounded-xl border p-6"><h2 className="text-lg">Profile gerade nicht erreichbar</h2><p className="mt-2 text-muted-foreground">Bitte versuche es erneut.</p><Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>Erneut laden</Button></div>) : isLoading ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" aria-hidden="true" />
             <p className="text-muted-foreground font-medium">Mentoren werden geladen...</p>
@@ -163,7 +157,7 @@ export default function MentorsPage() {
               ))}
             </div>
           </section>
-        ) : (
+        ) : activeMentors.length === 0 ? <MentorEmptyState /> : (
           <div className="rounded-xl border border-dashed border-border/80 bg-muted/20 p-8 sm:p-12 text-center max-w-xl mx-auto space-y-4">
             <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground">
               <SearchX className="w-6 h-6" aria-hidden="true" />
@@ -188,6 +182,7 @@ export default function MentorsPage() {
             )}
           </div>
         )}
+        <OriginalMentorExamples initialCity={filters.location} />
       </div>
     </div>
   );

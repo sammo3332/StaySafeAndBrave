@@ -11,7 +11,7 @@ export default function DatenschutzLoading() {
         </header>
 
         {[...Array(3)].map((_, index) => (
-          <Card key={index} className="shadow-lg">
+          <Card key={index} className="shadow-sm">
             <CardHeader>
               <Skeleton className="h-8 w-2/5" /> {/* Section Title */}
             </CardHeader>

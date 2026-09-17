@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,6 +35,7 @@ export function MentorFilters({
   onFilterChange,
   onReset,
 }: MentorFiltersProps) {
+  const [expanded,setExpanded] = useState(false);
   const hasActiveFilters = Boolean(
     filters.searchTerm || filters.location || filters.expertise || filters.language
   );
@@ -70,7 +72,7 @@ export function MentorFilters({
           >
             <span className="text-muted-foreground">
               {totalCount === 0 ? (
-                'Keine Mentoren verfügbar'
+                'Profile entdecken'
               ) : hasActiveFilters ? (
                 <>
                   <strong className="text-foreground">{filteredCount}</strong> von {totalCount} Mentoren
@@ -97,6 +99,7 @@ export function MentorFilters({
           </div>
         </div>
 
+        <Button type="button" variant="outline" className="sm:hidden w-full" aria-expanded={expanded} onClick={()=>setExpanded(!expanded)}>{expanded ? "Weniger Filter" : "Interessen & Sprachen filtern"}</Button>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Free-text Search */}
           <div className="space-y-1.5">
@@ -145,7 +148,7 @@ export function MentorFilters({
           </div>
 
           {/* Expertise Filter */}
-          <div className="space-y-1.5">
+          <div className={`${expanded ? "block" : "hidden sm:block"} space-y-1.5`}>
             <label htmlFor="expertise-select-trigger" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <Award className="w-3.5 h-3.5 text-secondary shrink-0" aria-hidden="true" />
               <span>Expertise</span>
@@ -169,7 +172,7 @@ export function MentorFilters({
           </div>
 
           {/* Language Filter */}
-          <div className="space-y-1.5">
+          <div className={`${expanded ? "block" : "hidden sm:block"} space-y-1.5`}>
             <label htmlFor="language-select-trigger" className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <LanguagesIcon className="w-3.5 h-3.5 text-secondary shrink-0" aria-hidden="true" />
               <span>Sprache</span>

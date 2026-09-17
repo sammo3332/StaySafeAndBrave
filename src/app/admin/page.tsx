@@ -255,24 +255,7 @@ export default function AdminOverviewPage() {
         </Card>
       </div>
 
-      {/* Backend & Security Operational Transparency Note */}
-      <div className="bg-muted/40 border rounded-xl p-5 space-y-2">
-        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-          <Info className="w-4 h-4 text-primary" />
-          Operative Hinweise &amp; Backend-Status
-        </div>
-        <ul className="text-xs text-muted-foreground space-y-1 list-disc pl-5 leading-relaxed">
-          <li>
-            <strong>Admin-Identitätsmodell:</strong> Autorisierung erfolgt ausschließlich über die private Firestore-Collection <code className="bg-background px-1 py-0.5 rounded border">/adminAuth/{`{authUid}`}</code>. Rollen werden niemals im öffentlichen Benutzerprofil gespeichert.
-          </li>
-          <li>
-            <strong>Statusübergänge bei Buchungen:</strong> Nur konservative, operative Übergänge (<code className="bg-background px-1 py-0.5 rounded border">confirmed</code>, <code className="bg-background px-1 py-0.5 rounded border">completed</code>, <code className="bg-background px-1 py-0.5 rounded border">cancelled</code>) sind zulässig. Eigentumsfelder (userId, mentorId, packageId, createdAt) sind strikt unveränderlich.
-          </li>
-          <li>
-            <strong>Server-seitiges Firebase Admin SDK:</strong> Noch nicht mit Dienstkonto-Schlüsseln konfiguriert. Privilegierte Server-Endpunkte schlagen konsequent sicher fehl (Fail-Closed).
-          </li>
-        </ul>
-      </div>
+      <aside className="border-t pt-5 text-sm text-muted-foreground">Prüfe offene Anfragen und verwalte bestehende Begleitungen. Die verfügbaren Aktionen richten sich nach dem aktuellen Status.</aside>
     </div>
   );
 }
