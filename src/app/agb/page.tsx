@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function AGBPage() {
   return (
-    <div className="container mx-auto px-4">
+    <div className="legal-document">
       <div className="space-y-8 max-w-3xl mx-auto">
         <header className="text-center py-8">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
@@ -20,10 +20,10 @@ export default function AGBPage() {
           </p>
         </header>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2 text-primary">
-              <ScrollText className="w-6 h-6 text-accent" />
+              <ScrollText className="w-6 h-6 text-muted-foreground" />
               § 1 Plattformkonzept &amp; Geltungsbereich
             </CardTitle>
           </CardHeader>
@@ -37,7 +37,7 @@ export default function AGBPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl text-primary">§ 2 Leistungsgegenstand</CardTitle>
           </CardHeader>
@@ -51,7 +51,7 @@ export default function AGBPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="text-xl text-primary">§ 3 Registrierung und Nutzerkonto</CardTitle>
           </CardHeader>

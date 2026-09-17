@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useChatScroll } from '@/hooks/use-chat-scroll';
 import { 
   Bot, 
   Send, 
@@ -79,9 +80,7 @@ export function TravelChat() {
   const activeBooking = userBookings && userBookings.length > 0 ? userBookings[0] : null;
 
   // Auto-scroll on new messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading]);
+  const {logRef,onScroll,hasNew,scrollToLatest}=useChatScroll(messages?.length);
 
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputValue).trim();
@@ -213,7 +212,7 @@ export function TravelChat() {
       )}
 
       {/* Main Chat Frame */}
-      <Card className="shadow-md border-border/80 bg-card overflow-hidden">
+      <Card className="shadow-sm border-border/80 bg-card overflow-hidden">
         {/* Chat Header Bar */}
         <div className="px-5 py-3.5 border-b bg-muted/30 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -248,10 +247,10 @@ export function TravelChat() {
         </div>
 
         {/* Chat Feed */}
-        <CardContent className="p-4 sm:p-6 min-h-[380px] max-h-[560px] overflow-y-auto space-y-4">
+        <CardContent ref={logRef} onScroll={onScroll} role="log" aria-label="AI-Unterhaltung" className="chat-log p-4 sm:p-6 space-y-4">
           {/* Empty / Welcome State */}
           {messages.length === 0 ? (
-            <div id="chat-empty-state" className="flex flex-col items-center justify-center text-center py-8 px-2 space-y-6">
+            <div id="chat-empty-state" className="flex flex-col items-center justify-center text-center py-3 px-2 space-y-4">
               <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                 <Sparkles className="w-7 h-7" />
               </div>
@@ -304,8 +303,8 @@ export function TravelChat() {
                     <div
                       className={`max-w-[85%] sm:max-w-[78%] rounded-2xl p-4 text-sm leading-relaxed ${
                         isUser
-                          ? 'bg-primary text-primary-foreground rounded-tr-xs ml-auto shadow-xs'
-                          : 'bg-muted/40 border border-border/70 text-foreground rounded-tl-xs shadow-xs'
+                          ? 'bg-primary text-primary-foreground rounded-tr-xs ml-auto shadow-sm'
+                          : 'bg-muted/40 border border-border/70 text-foreground rounded-tl-sm shadow-sm'
                       }`}
                     >
                       {/* Message Content rendered cleanly and safely via SafeMarkdown */}
@@ -361,7 +360,7 @@ export function TravelChat() {
                   <div className="w-8 h-8 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 animate-pulse">
                     <Bot className="w-4 h-4" />
                   </div>
-                  <div className="bg-muted/40 border border-border/70 rounded-2xl rounded-tl-xs p-3.5 text-xs text-muted-foreground flex items-center gap-2">
+                  <div className="bg-muted/40 border border-border/70 rounded-2xl rounded-tl-sm p-3.5 text-xs text-muted-foreground flex items-center gap-2">
                     <RefreshCw className="w-3.5 h-3.5 animate-spin text-primary" />
                     <span>Der Reiseassistent bereitet deine Antwort vor...</span>
                   </div>
@@ -392,7 +391,8 @@ export function TravelChat() {
         )}
 
         {/* Input Bar */}
-        <div className="p-4 border-t bg-background">
+        {hasNew && <Button variant="outline" onClick={scrollToLatest} className="m-3">Neue Antwort ansehen ↓</Button>}
+        <div className="chat-composer p-4 border-t bg-background">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -410,8 +410,8 @@ export function TravelChat() {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 onKeyDown={handleKeyDown}
-                placeholder="Stelle eine Frage zur Reisevorbereitung... (z.B. Packliste, Garden Route, Transport)"
-                className="min-h-[72px] max-h-[140px] resize-none pr-24 py-2.5 text-sm"
+                aria-label="Frage an den AI Travel Assistant" placeholder="Stelle eine Frage zur Reisevorbereitung... (z.B. Packliste, Garden Route, Transport)"
+                className="min-h-[96px] max-h-[160px] resize-none pr-4 pb-12 py-2.5 text-base"
                 disabled={isLoading}
                 maxLength={1000}
               />

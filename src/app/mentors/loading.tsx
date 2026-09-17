@@ -8,7 +8,7 @@ export default function MentorsLoading() {
       <Skeleton className="h-8 w-2/3" />
 
       {/* Filters Skeleton */}
-      <Card className="shadow-md mb-8">
+      <Card className="shadow-sm mb-8">
         <CardHeader>
           <Skeleton className="h-8 w-1/4" />
         </CardHeader>

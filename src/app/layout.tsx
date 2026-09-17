@@ -79,8 +79,9 @@ export default function RootLayout({
       >
         <FirebaseClientProvider>
           <CartProvider>
+            <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-background focus:p-3">Zum Inhalt</a>
             <Header />
-            <main className="flex-grow py-8">
+            <main id="main-content" tabIndex={-1} className="flex-grow min-w-0">
               {children}
             </main>
             <Footer />

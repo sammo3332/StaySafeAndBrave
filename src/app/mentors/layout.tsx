@@ -3,11 +3,11 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Local Mentoren in Südafrika',
   description:
-    'Finde verifizierte Local Mentoren in Kapstadt, Johannesburg und Durban für individuelle und sichere Reisebegleitung.',
+    'Entdecke Local Mentoren in Kapstadt, Johannesburg und Durban für persönliche Reisebegleitung.',
   openGraph: {
     title: 'Local Mentoren in Südafrika | Stay Safe & Brave',
     description:
-      'Finde verifizierte Local Mentoren in Kapstadt, Johannesburg und Durban für individuelle und sichere Reisebegleitung.',
+      'Entdecke Local Mentoren in Kapstadt, Johannesburg und Durban für persönliche Reisebegleitung.',
   },
 };
 

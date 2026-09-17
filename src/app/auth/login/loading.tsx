@@ -22,7 +22,7 @@ export default function LoginLoading() {
         </TabsList>
 
         {/* Common Card Structure for Skeleton */}
-        <Card className="shadow-xl mt-4">
+        <Card className="shadow-sm mt-4">
           <CardHeader className="text-center space-y-2">
             <Skeleton className="h-8 w-3/4 mx-auto" /> {/* Title */}
             <Skeleton className="h-5 w-full mx-auto" /> {/* Description */}

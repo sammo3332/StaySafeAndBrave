@@ -21,7 +21,7 @@ export default function BookingsLoading() {
         <Skeleton className="h-8 w-60" /> {/* Section Title */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[...Array(2)].map((_, index) => (
-            <Card key={index} className="shadow-md">
+            <Card key={index} className="shadow-sm">
               <CardHeader className="flex flex-row items-start gap-4 p-4">
                 <Skeleton className="h-[72px] w-[72px] rounded-lg" /> {/* Image */}
                 <div className="flex-1 space-y-2">

@@ -1,8 +1,11 @@
 'use client';
 
 import { use } from 'react';
+import { usePublicDocument } from '@/hooks/use-public-document';
+import { usePublicCollection } from '@/hooks/use-public-collection';
+import { publicMentor, publicReview } from '@/components/content/public-data';
 import Link from 'next/link';
-import Image from 'next/image';
+import { ContentImage } from '@/components/ui/content-image';
 import { useFirestore, useDoc, useCollection, useMemoFirebase } from '@/firebase';
 import { doc, collection, query, where } from 'firebase/firestore';
 import type { MentorDTO, ReviewDTO } from '@/lib/dtos';
@@ -43,7 +46,8 @@ export default function MentorDetailPage({ params }: PageProps) {
     return doc(db, 'mentors', mentorId);
   }, [db, mentorId]);
 
-  const { data: mentor, isLoading, error } = useDoc<MentorDTO>(mentorRef);
+  const { data: rawMentor, isLoading, error } = usePublicDocument<unknown>(mentorRef);
+  const mentor = publicMentor(rawMentor);
   const packages = getPackages();
 
   // Query real reviews from /reviews collection for this mentor
@@ -52,10 +56,11 @@ export default function MentorDetailPage({ params }: PageProps) {
     return query(collection(db, 'reviews'), where('mentorId', '==', mentorId));
   }, [db, mentorId]);
 
-  const { data: realReviews } = useCollection<ReviewDTO>(reviewsRef);
+  const { data: rawReviews, error: reviewsError, isLoading: reviewsLoading } = usePublicCollection<unknown>(reviewsRef);
+  const realReviews = (rawReviews || []).map(review => publicReview(review, mentorId)).filter(review => review !== null);
 
   // Loading state
-  if (isLoading) {
+  if (!db || isLoading) {
     return (
       <div className="container mx-auto px-4 py-16 max-w-5xl">
         <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -79,7 +84,7 @@ export default function MentorDetailPage({ params }: PageProps) {
               Fehler beim Laden des Profils
             </h1>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Das Mentorenprofil konnte leider nicht aus der Datenbank geladen werden. Bitte versuche es später noch einmal.
+              Das Profil konnte nicht geladen werden. Bitte versuche es später erneut.
             </p>
           </div>
           <div>
@@ -124,7 +129,7 @@ export default function MentorDetailPage({ params }: PageProps) {
     );
   }
 
-  const fullName = `${mentor.firstName || ''} ${mentor.lastName || ''}`.trim() || 'Lokaler Mentor';
+  const fullName = `${mentor.firstName || ''} ${mentor.lastName || ''}`.trim() || 'Local Mentor';
   const realReviewCount = realReviews?.length || 0;
   const realAverageRating =
     realReviewCount > 0
@@ -145,7 +150,7 @@ export default function MentorDetailPage({ params }: PageProps) {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="page-shell py-10">
       {/* Navigation Breadcrumb */}
       <div className="mb-6">
         <Link
@@ -159,18 +164,11 @@ export default function MentorDetailPage({ params }: PageProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Left Column: Portrait & Key Facts */}
-        <div className="lg:col-span-1 space-y-6">
+        <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
           <Card className="overflow-hidden border border-border/70 shadow-sm bg-card">
             <div className="relative aspect-[4/3] sm:aspect-[4/3] bg-muted/60 w-full overflow-hidden">
               {mentor.profilePictureUrl ? (
-                <Image
-                  src={mentor.profilePictureUrl}
-                  alt={`Porträt von ${fullName}`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 33vw"
-                  className="object-cover"
-                  priority
-                />
+                <ContentImage src={mentor.profilePictureUrl} alt={`Porträt von ${fullName}`} fallback="Porträt noch nicht verfügbar" className="h-full w-full"/>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
                   <User className="w-20 h-20 stroke-1 opacity-40 mb-2" aria-hidden="true" />
@@ -182,7 +180,7 @@ export default function MentorDetailPage({ params }: PageProps) {
               {isVerified && (
                 <Badge
                   variant="secondary"
-                  className="absolute top-3 right-3 bg-emerald-700 text-white border border-emerald-600 text-xs shadow-md font-medium flex items-center gap-1 px-2.5 py-1"
+                  className="absolute top-3 right-3 bg-emerald-700 text-white border border-emerald-600 text-xs shadow-sm font-medium flex items-center gap-1 px-2.5 py-1"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5 text-white shrink-0" aria-hidden="true" />
                   <span>Verifiziert</span>
@@ -227,7 +225,7 @@ export default function MentorDetailPage({ params }: PageProps) {
                     <LanguagesIcon className="w-4 h-4 text-secondary shrink-0" aria-hidden="true" />
                     <span>Gesprochene Sprachen</span>
                   </div>
-                  <p className="text-sm text-muted-foreground pl-5.5">
+                  <p className="text-sm text-muted-foreground pl-6">
                     {languagesList.join(', ')}
                   </p>
                 </div>
@@ -277,7 +275,7 @@ export default function MentorDetailPage({ params }: PageProps) {
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm"
                 >
                   <Link href={`/pakete-preise?mentor=${mentor.id}`}>
-                    Mit diesem Mentor weitermachen
+                    Begleitung anfragen
                     <ArrowRight className="w-4 h-4 ml-2 shrink-0" aria-hidden="true" />
                   </Link>
                 </Button>
@@ -377,11 +375,11 @@ export default function MentorDetailPage({ params }: PageProps) {
                 )}
               </div>
               <CardDescription className="text-sm text-muted-foreground">
-                Authentische Rückmeldungen von Reisenden, die eine reale Begleitung mit {mentor.firstName} gebucht haben.
+                Rückmeldungen zu bestätigten oder abgeschlossenen Buchungen mit {mentor.firstName}.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {realReviewCount > 0 ? (
+              {reviewsError ? <p role="alert" className="text-sm text-muted-foreground">Bewertungen konnten gerade nicht geladen werden.</p> : reviewsLoading ? <p role="status" className="text-sm text-muted-foreground">Bewertungen werden geladen …</p> : realReviewCount > 0 ? (
                 <div className="space-y-4">
                   {realReviews!.map((rev) => (
                     <div key={rev.id} className="p-4 rounded-xl border bg-muted/20 space-y-2">
@@ -426,7 +424,7 @@ export default function MentorDetailPage({ params }: PageProps) {
               ) : (
                 <div className="p-6 rounded-xl border border-dashed text-center bg-muted/20">
                   <p className="text-sm text-muted-foreground">
-                    Für {mentor.firstName} liegen noch keine Bewertungen vor. Nach einer durchgeführten Reisebegleitung können Reisende direkt in ihrem Buchungsbereich eine Bewertung abgeben.
+                    Für {mentor.firstName} liegen noch keine Bewertungen vor. Zu bestätigten oder abgeschlossenen Buchungen können Reisende direkt in ihrem Buchungsbereich eine Bewertung abgeben.
                   </p>
                 </div>
               )}
@@ -443,20 +441,11 @@ export default function MentorDetailPage({ params }: PageProps) {
                 </CardTitle>
               </div>
               <CardDescription className="text-sm text-muted-foreground leading-relaxed mt-1">
-                Wähle im nächsten Produktschritt ein Begleitpaket für deine Reise.
+                Leistungen und Preise sind noch in Abstimmung. Du kannst bereits eine Anfrage stellen.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {packages.map((pkg) => (
-                  <div key={pkg.id} className="rounded-xl border border-border/70 bg-card p-5 space-y-2">
-                    <h3 className="font-semibold text-lg text-primary">{pkg.name}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                      {pkg.description || pkg.shortDescription}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground">Basis, Standard und Premium sind noch nicht als unterschiedliche Leistungen definiert. Den aktuellen Stand siehst du im nächsten Schritt.</p>
 
               {/* Bottom CTA Block */}
               <div className="rounded-xl bg-card border border-border/60 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -474,7 +463,7 @@ export default function MentorDetailPage({ params }: PageProps) {
                   className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shrink-0"
                 >
                   <Link href={`/pakete-preise?mentor=${mentor.id}`}>
-                    Mit diesem Mentor weitermachen
+                    Begleitung anfragen
                     <ArrowRight className="w-4 h-4 ml-2 shrink-0" aria-hidden="true" />
                   </Link>
                 </Button>

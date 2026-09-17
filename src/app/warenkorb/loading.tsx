@@ -1,40 +1,18 @@
-
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 
-export default function WarenkorbLoading() {
+export default function Loading() {
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col items-center">
-        <header className="text-center py-8 space-y-4">
-          <Skeleton className="h-12 w-72 mx-auto" />
-        </header>
-
-        <Card className="w-full max-w-2xl shadow-lg">
-          <CardHeader className="space-y-2">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-5 w-full" />
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="p-4 border rounded-lg bg-muted/30 space-y-3">
-              <Skeleton className="h-7 w-1/2" />
-              <Skeleton className="h-9 w-1/3" />
-              <div className="space-y-2 pt-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-4 w-full" />
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-6 w-24" />
-              <Skeleton className="h-8 w-20" />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col sm:flex-row gap-2">
-            <Skeleton className="h-11 w-full" />
-            <Skeleton className="h-11 w-full" />
-          </CardFooter>
-        </Card>
+    <div className="page-shell section-space space-y-8" role="status" aria-label="Seite wird geladen">
+      <span className="sr-only">Seite wird geladen …</span>
+      <div className="max-w-2xl space-y-4" aria-hidden="true">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-12 w-4/5" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-2/3" />
+      </div>
+      <div className="max-w-3xl space-y-4 border-t pt-8" aria-hidden="true">
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <Skeleton className="h-24 w-full rounded-xl" />
       </div>
     </div>
   );

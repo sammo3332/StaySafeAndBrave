@@ -10,7 +10,7 @@ export default function ImpressumLoading() {
           <Skeleton className="h-6 w-3/4 mx-auto" /> {/* Subtitle */}
         </header>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <Skeleton className="h-8 w-2/5" /> {/* Section Title */}
           </CardHeader>
@@ -24,7 +24,7 @@ export default function ImpressumLoading() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-sm">
           <CardHeader>
             <Skeleton className="h-8 w-1/3" /> {/* Section Title */}
           </CardHeader>

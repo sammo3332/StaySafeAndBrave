@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
 import { useRouter } from "next/navigation";
 import { useUser, useFirestore } from "@/firebase";
 import {
@@ -159,9 +160,7 @@ export default function MentorConversationPage({
   }, [db, conversationId]);
 
   // Auto-scroll on new messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  const {logRef,onScroll,hasNew,scrollToLatest}=useChatScroll(messages?.length);
 
   // Format helpers
   const formatTime = (timestamp: any) => {
@@ -252,7 +251,7 @@ export default function MentorConversationPage({
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
             <p>
-              Dein Konto ist keinem Mentor-Profil über die private Autorisierung (<code>/mentorAuth</code>) zugeordnet.
+              Dein Konto ist noch keinem Mentor-Profil zugeordnet. Wende dich bitte an das Projektteam.
             </p>
             <Button asChild variant="outline">
               <Link href="/mentor/messages">Zurück zur Übersicht</Link>
@@ -342,7 +341,7 @@ export default function MentorConversationPage({
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground">
-              Reisenden-ID: <span className="font-mono">{conversation.travelerId}</span>
+              Nachrichten zu dieser Reiseanfrage
             </p>
           </div>
           <div className="text-xs text-muted-foreground sm:text-right">
@@ -354,7 +353,7 @@ export default function MentorConversationPage({
       {/* Messages Stream */}
       <Card className="shadow-sm border">
         <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col space-y-4 min-h-[360px] max-h-[520px] overflow-y-auto pr-1">
+          <div ref={logRef} onScroll={onScroll} role="log" aria-label="Nachrichtenverlauf" className="chat-log flex flex-col space-y-4 pr-1">
             {isMessagesLoading ? (
               <div className="flex flex-col items-center justify-center flex-1 py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-primary mb-2" />
@@ -377,10 +376,10 @@ export default function MentorConversationPage({
                     </div>
 
                     <div
-                      className={`max-w-[82%] sm:max-w-[70%] rounded-2xl px-4 py-2.5 text-sm shadow-xs ${
+                      className={`max-w-[82%] sm:max-w-[70%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
                         isMe
-                          ? "bg-primary text-primary-foreground rounded-br-xs"
-                          : "bg-muted border border-border text-foreground rounded-bl-xs"
+                          ? "bg-primary text-primary-foreground rounded-br-sm"
+                          : "bg-muted border border-border text-foreground rounded-bl-sm"
                       }`}
                     >
                       <p className="whitespace-pre-wrap break-words leading-relaxed">
@@ -409,10 +408,11 @@ export default function MentorConversationPage({
         </CardContent>
       </Card>
 
+      {hasNew && <Button onClick={scrollToLatest} variant="outline">Neue Nachrichten ansehen ↓</Button>}
       {/* Reply Input Box */}
       <Card className="shadow-sm border">
         <CardContent className="p-4 sm:p-5">
-          <form onSubmit={handleSendMessage} className="space-y-3">
+          <form onSubmit={handleSendMessage} className="chat-composer space-y-3">
             {sendError && (
               <div className="flex items-center gap-2 p-2.5 rounded-md bg-destructive/10 border border-destructive/20 text-xs text-destructive">
                 <AlertCircle className="w-4 h-4 shrink-0" />
@@ -421,11 +421,11 @@ export default function MentorConversationPage({
             )}
 
             <div className="space-y-1.5">
-              <Textarea
+              <Textarea aria-label="Nachricht schreiben"
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Schreibe deine Antwort an den Reisenden..."
-                className="min-h-[100px] resize-none text-sm"
+                className="min-h-[72px] resize-none text-base"
                 maxLength={2000}
                 disabled={isSending}
                 onKeyDown={(e) => {
@@ -436,7 +436,7 @@ export default function MentorConversationPage({
                 }}
               />
               <div className="flex justify-between items-center text-[11px] text-muted-foreground px-1">
-                <span>Enter zum Senden • Umschalt+Enter für neue Zeile</span>
+                <span>Umschalt+Enter: neue Zeile</span>
                 <span>{messageText.length} / 2000</span>
               </div>
             </div>

@@ -1,0 +1,22 @@
+# Copy settings to your server environment; never commit real credentials.
+# Everything stays off until a separate integration test environment is configured.
+SSB_COMMERCE_ENABLED=false
+SSB_LIVE_PAYMENTS_APPROVED=false
+SSB_ENGAGEMENT_ENABLED=false
+EMAIL_TRANSPORT_ENABLED=false
+SSB_SITE_URL=http://127.0.0.1:3005
+FIREBASE_ADMIN_PROJECT_ID=
+FIREBASE_ADMIN_CLIENT_EMAIL=
+FIREBASE_ADMIN_PRIVATE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+# Hosted Checkout: card (default), paypal, or card,paypal. Enable PayPal in Stripe first.
+# Apple Pay / Google Pay use card; availability depends on account, device and wallet.
+# Do not add delayed methods such as sepa_debit until their lifecycle is implemented.
+SSB_STRIPE_PAYMENT_METHODS=card
+EMAIL_PROVIDER_API_KEY=
+EMAIL_FROM=
+CONTACT_EMAIL_TO=
+TURNSTILE_SECRET_KEY=
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+SSB_FORM_HASH_SECRET=

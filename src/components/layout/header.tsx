@@ -1,121 +1,23 @@
 'use client';
-
+import { originalAssets } from '@/components/content/original-assets';
 import { useState } from 'react';
 import Link from 'next/link';
-import { HeartHandshake, Menu, UserCircle, Sparkles } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Menu, ArrowUpRight, UserRound } from 'lucide-react';
+import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
-import { cn } from '@/lib/utils';
-import { CartIcon } from '@/components/cart/cart-icon';
-
-const NavLink = ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
-  <Button
-    variant="ghost"
-    asChild
-    className={cn("text-sm font-medium hover:bg-accent/10 hover:text-primary dark:hover:text-primary", className)}
-  >
-    <Link href={href}>
-      {children}
-    </Link>
-  </Button>
-);
-
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+const links = [{href:'/mentors',label:'Local Mentoren'},{href:'/#so-funktionierts',label:'So funktioniert’s'},{href:'/stories',label:'Südafrika entdecken'},{href:'/travel-assistant',label:'Reise planen'},{href:'/demo',label:'Demo erleben'}];
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const navItems = [
-    { href: '/mentors', label: 'Mentoren' },
-    { href: '/stories', label: 'Stories' },
-    { href: '/travel-assistant', label: 'AI-Assistent' },
-    { href: '/pakete-preise', label: 'Pakete & Preise' },
-    { href: '/sicherheitsrichtlinien', label: 'Sicherheit' },
-    { href: '/ueber-uns', label: 'Über uns' },
-    { href: '/kontakt', label: 'Kontakt' },
-  ];
-
-  return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-xs">
-      <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2" prefetch={false} aria-label="Stay Safe & Brave Startseite">
-          <HeartHandshake className="h-7 w-7 text-primary" />
-          <span className="text-xl font-bold text-primary tracking-tight">Stay Safe &amp; Brave</span>
-        </Link>
-        
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-1">
-          {navItems.map(item => (
-            <NavLink key={item.href} href={item.href}>{item.label}</NavLink>
-          ))}
-          <CartIcon />
-          <NavLink href="/auth/login" className="ml-2">
-            <UserCircle className="h-5 w-5 mr-1"/>
-            Login
-          </NavLink>
-        </nav>
-
-        {/* Mobile Navigation */}
-        <div className="lg:hidden flex items-center gap-2">
-          <CartIcon />
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Navigation öffnen">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Navigation öffnen</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="bg-background w-[280px] sm:w-[320px]">
-              <SheetHeader>
-                <SheetTitle className="sr-only">Navigation</SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-1 mt-4">
-                <Link
-                  href="/"
-                  className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg hover:bg-muted"
-                  prefetch={false}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <HeartHandshake className="h-6 w-6 text-primary" />
-                  <span className="text-lg font-bold text-primary">Stay Safe &amp; Brave</span>
-                </Link>
-
-                {navItems.map(item => (
-                  <Button
-                    key={item.href}
-                    variant="ghost"
-                    asChild
-                    className="w-full justify-start text-base py-3 hover:bg-accent/10 hover:text-primary"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Link href={item.href}>
-                      {item.label}
-                    </Link>
-                  </Button>
-                ))}
-
-                <div className="pt-4 mt-2 border-t border-border flex flex-col gap-2">
-                  <Button
-                    variant="default"
-                    asChild
-                    className="w-full justify-center"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Link href="/auth/login">
-                      <UserCircle className="h-5 w-5 mr-2"/>
-                      Login / Registrieren
-                    </Link>
-                  </Button>
-                </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
-    </header>
-  );
+ const [open,setOpen]=useState(false); const pathname=usePathname(); const {user}=useUser();
+ if(pathname.startsWith('/en')) return <header lang="en" className="border-b bg-background"><div className="page-shell flex flex-wrap items-center justify-between gap-4 py-5"><Link href="/en" className="font-semibold">Stay Safe & Brave</Link><nav aria-label="Main navigation" className="flex flex-wrap gap-5 text-sm">{[['Mentors','/en/mentors'],['Packages','/en/packages'],['Demo','/en/demo'],['About','/en/about'],['Join us','/en/join'],['FAQ','/en/faq'],['Deutsch','/']].map(([label,href])=><Link key={href} className="min-h-11 inline-flex items-center" href={href}>{label}</Link>)}</nav></div></header>;
+ return <header className={`sticky top-0 z-50 ${pathname === '/' ? 'destination-header' : 'border-b bg-background/95'}`}>
+  <div className={`${pathname === '/' ? 'destination-header-inner' : 'page-shell'} flex min-h-20 items-center justify-between gap-3`}>
+   <Link href="/" aria-label="Stay Safe & Brave Startseite" className="flex shrink-0 items-center gap-2.5"><img src={originalAssets.logo} width={500} height={500} alt="" className="h-10 w-10 shrink-0 rounded-full"/><span className="text-sm sm:text-base font-semibold leading-tight tracking-tight">Stay Safe &amp; Brave<span className="block text-[10px] font-normal uppercase tracking-widest text-muted-foreground">Südafrika · Lokal verbunden</span></span></Link>
+   <nav aria-label="Hauptnavigation" className="hidden xl:flex gap-5">{links.map(l=><Link key={l.href} href={l.href} aria-current={pathname===l.href?'page':undefined} className="text-sm hover:text-primary aria-[current=page]:text-primary">{l.label}</Link>)}</nav>
+   <div className="flex items-center gap-2"><Link href="/en" className="px-2 py-3 text-xs" aria-label="Switch to English">EN</Link><Button asChild variant="outline" className="hidden sm:inline-flex"><Link href={user?'/dashboard':'/auth/login'}><UserRound className="h-4 w-4"/>{user?'Meine Reise':'Anmelden'}</Link></Button>
+    <Sheet open={open} onOpenChange={setOpen}><SheetTrigger asChild><Button variant="ghost" size="icon" className="xl:hidden" aria-label="Menü öffnen"><Menu/></Button></SheetTrigger><SheetContent className="w-[min(90vw,360px)] overflow-y-auto"><SheetHeader><SheetTitle>Dein nächstes Abenteuer</SheetTitle></SheetHeader><nav aria-label="Mobile Navigation" className="mt-8 flex flex-col">{links.map(l=><Link onClick={()=>setOpen(false)} key={l.href} href={l.href} className="flex items-center justify-between border-b py-5 text-lg">{l.label}<ArrowUpRight className="h-4 w-4"/></Link>)}<Link href={user?'/dashboard':'/auth/login'} onClick={()=>setOpen(false)} className="mt-6 rounded-xl bg-foreground px-5 py-4 text-background">{user?'Meine Reise öffnen':'Anmelden / Registrieren'}</Link><Link href="/warenkorb" onClick={()=>setOpen(false)} className="py-5 text-sm">Meine Auswahl</Link></nav></SheetContent></Sheet>
+   </div>
+  </div>
+ </header>;
 }

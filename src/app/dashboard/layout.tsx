@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { WorkspaceNav } from '@/components/layout/workspace-nav';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -14,7 +15,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="container mx-auto px-4">
+    <div className="workspace-shell">
+      <WorkspaceNav />
       {children}
     </div>
   );

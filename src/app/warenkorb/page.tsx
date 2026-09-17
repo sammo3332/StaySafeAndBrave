@@ -11,22 +11,20 @@ import Link from 'next/link';
 export default function WarenkorbPage() {
   const { cart, clearCart } = useContext(CartContext);
 
-  const displayPrice = cart?.priceAmount !== undefined 
-    ? `${cart.priceAmount} €` 
-    : (cart?.priceLabel || 'Preis in Abstimmung');
+  const displayPrice = 'Preis in Abstimmung';
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="page-shell py-10">
       <div className="flex flex-col items-center">
         <header className="text-center py-8">
-          <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl flex items-center gap-3 justify-center">
+          <h1 className="editorial-title page-title flex items-center gap-3 justify-center">
             <ShoppingCart className="w-10 h-10" />
-            Mein Warenkorb
+            Deine Auswahl
           </h1>
         </header>
 
         {cart ? (
-          <Card className="w-full max-w-2xl shadow-lg border border-border/70">
+          <Card className="w-full max-w-2xl shadow-sm border border-border/70">
             <CardHeader>
               <CardTitle className="text-2xl text-primary">Ausgewähltes Begleitpaket</CardTitle>
               <CardDescription>
@@ -69,7 +67,7 @@ export default function WarenkorbPage() {
               </div>
 
               <div className="flex justify-between items-center pt-2 border-t border-border/60">
-                <p className="text-base font-semibold text-foreground">Status / Preis:</p>
+                <p className="text-base font-semibold text-foreground">Aktueller Stand:</p>
                 <p className="text-xl font-bold text-primary">{displayPrice}</p>
               </div>
             </CardContent>
@@ -94,27 +92,23 @@ export default function WarenkorbPage() {
                 </Button>
               )}
               <div className="flex flex-col sm:flex-row gap-2 w-full">
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/bezahlen">
-                    Online-Zahlung ansehen <ArrowRight className="w-4 h-4 ml-1.5" />
-                  </Link>
-                </Button>
+
                 <Button variant="outline" className="w-full" onClick={clearCart}>
                   <Trash2 className="w-4 h-4 mr-1.5 text-muted-foreground" />
-                  Warenkorb leeren
+                  Auswahl verwerfen
                 </Button>
               </div>
             </CardFooter>
           </Card>
         ) : (
-          <Card className="w-full max-w-lg text-center p-8 shadow-lg">
+          <Card className="w-full max-w-lg text-center p-8 shadow-sm">
             <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-2xl font-semibold">Dein Warenkorb ist leer</h2>
+            <h2 className="text-2xl font-semibold">Deine Reise beginnt hier.</h2>
             <p className="text-muted-foreground mt-2 mb-6">
-              Du hast noch kein Begleitpaket zu deinem Warenkorb hinzugefügt.
+              Entdecke zuerst einen Local Mentor und stelle deine Anfrage zusammen.
             </p>
             <Button asChild>
-              <Link href="/pakete-preise">Zu den Paketen</Link>
+              <Link href="/mentors">Local Mentoren entdecken</Link>
             </Button>
           </Card>
         )}

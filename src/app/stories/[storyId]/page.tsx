@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { ContentImage } from "@/components/ui/content-image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 import { useFirestore } from "@/firebase";
 import { collectionGroup, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { publicStory, publicMentor, formatStoryDate } from '@/components/content/public-data';
 import type { ReportDTO, MentorDTO } from "@/lib/dtos";
 import { toast } from "@/hooks/use-toast";
 
@@ -34,6 +36,8 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
   const [mentor, setMentor] = useState<MentorDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isNotFound, setIsNotFound] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     if (!db || !storyId) return;
@@ -43,6 +47,9 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
     async function loadStory() {
       setIsLoading(true);
       setIsNotFound(false);
+      setLoadError(null);
+      setStory(null);
+      setMentor(null);
 
       try {
         // Query collectionGroup for public stories only
@@ -53,15 +60,21 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
         const snapshot = await getDocs(q);
 
         let matchingStory: ReportDTO | null = null;
+        let invalidMatch = false;
         for (const docSnap of snapshot.docs) {
-          if (docSnap.id === storyId || docSnap.data().id === storyId) {
-            matchingStory = { id: docSnap.id, ...docSnap.data() } as ReportDTO;
+          if (docSnap.id === storyId) {
+            matchingStory = publicStory({ ...docSnap.data(), id: docSnap.id });
+            invalidMatch = matchingStory === null;
             break;
           }
         }
 
         if (!isMounted) return;
 
+        if (invalidMatch) {
+          setLoadError('Dieser öffentliche Eintrag kann gerade nicht dargestellt werden.');
+          return;
+        }
         if (!matchingStory || matchingStory.visibility !== "public") {
           setIsNotFound(true);
           setIsLoading(false);
@@ -75,7 +88,8 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
           try {
             const mentorSnap = await getDoc(doc(db, "mentors", matchingStory.mentorId));
             if (mentorSnap.exists() && isMounted) {
-              setMentor({ id: mentorSnap.id, ...mentorSnap.data() } as MentorDTO);
+              const linkedMentor = publicMentor({ ...mentorSnap.data(), id: mentorSnap.id });
+              setMentor(linkedMentor?.active === false ? null : linkedMentor);
             }
           } catch (e) {
             console.warn("Could not load linked mentor info", e);
@@ -83,7 +97,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
         }
       } catch (err) {
         console.error("Error loading travel story:", err);
-        if (isMounted) setIsNotFound(true);
+        if (isMounted) setLoadError('Die Story konnte gerade nicht geladen werden. Bitte versuche es erneut.');
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -94,15 +108,17 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
     return () => {
       isMounted = false;
     };
-  }, [db, storyId]);
+  }, [db, storyId, retry]);
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (typeof window !== "undefined") {
-      navigator.clipboard?.writeText(window.location.href);
+      try {
+      await navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link kopiert",
         description: "Der Link zu dieser Travel Story wurde in deine Zwischenablage kopiert.",
       });
+      } catch { toast({title:"Link konnte nicht kopiert werden",description:"Kopiere die Adresse aus der Adresszeile deines Browsers.",variant:"destructive"}); }
     }
   };
 
@@ -113,6 +129,17 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
         <p className="text-sm text-muted-foreground">Travel Story wird geladen...</p>
       </div>
     );
+  }
+
+  if (loadError) {
+    return <div className="page-shell py-16 max-w-2xl" role="alert">
+      <h1 className="editorial-title section-title">Story gerade nicht erreichbar</h1>
+      <p className="mt-4 text-muted-foreground">{loadError}</p>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Button onClick={() => setRetry(value => value + 1)}>Erneut versuchen</Button>
+        <Button asChild variant="outline"><Link href="/stories">Alle Travel Stories</Link></Button>
+      </div>
+    </div>;
   }
 
   if (isNotFound || !story) {
@@ -135,23 +162,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
     );
   }
 
-  const formattedDate = story.publishedAt
-    ? new Date(story.publishedAt).toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      })
-    : story.tripDate
-    ? new Date(story.tripDate).toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      })
-    : new Date(story.createdAt).toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      });
+  const formattedDate = formatStoryDate(story);
 
   return (
     <article className="container mx-auto px-4 max-w-3xl py-8">
@@ -178,7 +189,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
           </Badge>
           <span className="flex items-center gap-1">
             <CalendarDays className="w-3.5 h-3.5" />
-            {formattedDate}
+            {formattedDate || 'Ohne Datumsangabe'}
           </span>
           {story.location && (
             <span className="flex items-center gap-1 font-medium text-foreground">
@@ -188,7 +199,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
           )}
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground leading-tight">
+        <h1 className="editorial-title page-title leading-tight">
           {story.title}
         </h1>
       </header>
@@ -197,7 +208,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
       {(mentor || story.mentorName) && (
         <Card className="mb-8 border-primary/20 bg-primary/5 rounded-xl overflow-hidden">
           <CardHeader className="p-4 pb-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap gap-3 items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-primary flex items-center gap-1.5">
                 <UserCheck className="w-4 h-4 text-emerald-600" />
                 Reisebegleitung &amp; Mentor
@@ -224,9 +235,10 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
         </Card>
       )}
 
+      {story.imageUrls?.[0] && <ContentImage src={story.imageUrls[0]} alt={`Reisebild zu ${story.title}`} className="mb-8 aspect-[3/2] w-full rounded-2xl" fallback="Kein Reisebild verfügbar"/>}
       {/* Story Content */}
       <div className="prose prose-neutral dark:prose-invert max-w-none">
-        <div className="text-base sm:text-lg leading-relaxed text-foreground/90 whitespace-pre-line space-y-4">
+        <div className="text-base sm:text-lg leading-relaxed text-foreground/90 whitespace-pre-line break-words space-y-4">
           {story.content}
         </div>
       </div>
@@ -236,7 +248,7 @@ export default function StoryDetailPage({ params }: StoryDetailPageProps) {
         <div className="p-5 rounded-xl bg-muted/40 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-sm font-semibold text-foreground">
-              Möchtest du Südafrika genauso sicher entdecken?
+              Bereit für deine eigene Südafrika-Reise?
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
               Finde deinen persönlichen Local Mentor für maßgeschneiderte Tipps und Begleitung.

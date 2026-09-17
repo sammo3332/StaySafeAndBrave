@@ -103,13 +103,13 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <Card className="shadow-lg">
+      <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2 text-primary">
-            <UserCircle className="w-6 h-6 text-accent" />
+            <UserCircle className="w-6 h-6 text-muted-foreground" />
             Profilinformationen
           </CardTitle>
-          <CardDescription>Aktualisiere deine persönlichen Daten und deinen Avatar.</CardDescription>
+          <CardDescription>Aktualisiere deine persönlichen Angaben.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...profileForm}>
@@ -200,26 +200,6 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Separator />
-
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2 text-primary">
-            <Bell className="w-6 h-6 text-accent"/>
-            Benachrichtigungen
-          </CardTitle>
-          <CardDescription>Wähle, wie du benachrichtigt werden möchtest.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-row items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <p className="text-base font-medium">E-Mail-Benachrichtigungen</p>
-              <p className="text-sm text-muted-foreground">Erhalte Updates zu deinen Buchungen.</p>
-            </div>
-            <Switch checked={true} />
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

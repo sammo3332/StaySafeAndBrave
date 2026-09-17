@@ -1,6 +1,9 @@
 "use client";
+import { usePublicCollection } from '@/hooks/use-public-collection';
 
 import Link from "next/link";
+import { OriginalStoryTeaser } from "@/components/content/original-story-teaser";
+import { ContentImage } from "@/components/ui/content-image";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,8 +17,9 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
-import { useFirestore, useCollection, useMemoFirebase } from "@/firebase";
+import { useFirestore,  useMemoFirebase } from "@/firebase";
 import { collectionGroup, query, where } from "firebase/firestore";
+import { publicStory, storyDate, formatStoryDate } from '@/components/content/public-data';
 import type { ReportDTO } from "@/lib/dtos";
 
 export default function StoriesPage() {
@@ -27,30 +31,27 @@ export default function StoriesPage() {
     return query(collectionGroup(db, "reports"), where("visibility", "==", "public"));
   }, [db]);
 
-  const { data: rawStories, isLoading, error } = useCollection<ReportDTO>(publicStoriesQuery);
+  const { data: rawStories, isLoading, error } = usePublicCollection<ReportDTO>(publicStoriesQuery);
 
-  // Sort descending by publication date or creation date in memory (avoiding composite index requirements)
-  const stories = rawStories
-    ? [...rawStories].sort((a, b) => {
-        const dateA = new Date(a.publishedAt || a.createdAt).getTime();
-        const dateB = new Date(b.publishedAt || b.createdAt).getTime();
-        return dateB - dateA;
-      })
-    : [];
+  const parsedStories = (rawStories || []).map(publicStory);
+  const invalidCount = parsedStories.filter(story => story === null).length;
+  const stories = parsedStories.filter(story => story !== null)
+    .sort((a, b) => (storyDate(b) ?? 0) - (storyDate(a) ?? 0));
+  const loading = !db || isLoading;
 
   return (
-    <div className="container mx-auto px-4 max-w-6xl py-6">
+    <div className="page-shell py-12">
       {/* Header section */}
       <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
         <Badge variant="outline" className="px-3 py-1 text-xs text-primary border-primary/30">
           <Sparkles className="w-3 h-3 mr-1 text-primary" />
           Authentische Reiseberichte
         </Badge>
-        <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground">
+        <h1 className="editorial-title page-title">
           Travel Stories aus Südafrika
         </h1>
         <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-          Echte Erlebnisse, Routen und Insider-Tipps von Reisenden, die Südafrika selbstorganisiert und sicher mit unseren Local Mentoren erkundet haben.
+          Echte Erlebnisse, Routen und Insider-Tipps von Reisenden, die Südafrika selbstorganisiert erkundet haben.
         </p>
 
         <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
@@ -66,8 +67,10 @@ export default function StoriesPage() {
         </div>
       </div>
 
+      <div className="max-w-3xl mx-auto"><OriginalStoryTeaser /></div>
+      <h2 className="text-xl font-semibold mb-6">Stories aus der Community</h2>
       {/* Loading state */}
-      {isLoading && (
+      {loading && (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="w-10 h-10 animate-spin text-primary mb-3" />
           <p className="text-sm text-muted-foreground">Travel Stories werden geladen...</p>
@@ -76,50 +79,38 @@ export default function StoriesPage() {
 
       {/* Error state */}
       {error && (
-        <div className="p-6 rounded-xl border border-destructive/30 bg-destructive/5 text-center max-w-lg mx-auto">
+        <div role="alert" className="p-6 rounded-xl border border-destructive/30 bg-destructive/5 text-center max-w-lg mx-auto">
           <p className="text-sm text-destructive font-medium">
             Travel Stories konnten aktuell nicht geladen werden.
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            Bitte prüfe deine Verbindung oder versuche es in wenigen Augenblicken erneut.
+            Bitte versuche es später erneut. Andere Bereiche der Anwendung kannst du weiterhin nutzen.
           </p>
         </div>
       )}
 
+
+
+      {!loading && !error && invalidCount > 0 && <p role="status" className="mb-6 text-sm text-muted-foreground">Einige veröffentlichte Einträge konnten nicht dargestellt werden.</p>}
       {/* Stories list */}
-      {!isLoading && !error && (
+      {!loading && !error && (
         <>
           {stories.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {stories.map((story) => {
-                const formattedDate = story.publishedAt
-                  ? new Date(story.publishedAt).toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })
-                  : story.tripDate
-                  ? new Date(story.tripDate).toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })
-                  : new Date(story.createdAt).toLocaleDateString("de-DE", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    });
+                const formattedDate = formatStoryDate(story);
 
                 return (
                   <Card
                     key={story.id}
-                    className="flex flex-col justify-between overflow-hidden rounded-xl border bg-card shadow-xs hover:shadow-md transition-all duration-200"
+                    className="flex flex-col justify-between overflow-hidden rounded-xl border bg-card shadow-sm hover:shadow-sm transition-all duration-200"
                   >
+                    {story.imageUrls?.[0] && <ContentImage src={story.imageUrls[0]} alt={`Reisebild zu ${story.title}`} className="aspect-[3/2] w-full" fallback="Kein Reisebild verfügbar"/>}
                     <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground mb-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground mb-1">
                         <span className="flex items-center gap-1">
-                          <CalendarDays className="w-3.5 h-3.5 text-secondary" />
-                          {formattedDate}
+                          <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+                          {formattedDate || 'Ohne Datumsangabe'}
                         </span>
                         {story.location && (
                           <span className="flex items-center gap-1 font-medium text-foreground">
@@ -177,17 +168,17 @@ export default function StoriesPage() {
               })}
             </div>
           ) : (
-            <Card className="bg-muted/30 p-12 text-center border-dashed max-w-xl mx-auto">
+            <Card className="bg-muted/30 p-6 sm:p-12 text-center border-dashed max-w-xl mx-auto">
               <Compass className="w-14 h-14 text-muted-foreground/50 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-foreground">
-                Noch keine veröffentlichten Travel Stories
+                {invalidCount > 0 ? "Stories gerade nicht darstellbar" : "Raum für neue Reisegeschichten"}
               </h2>
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                Unsere Reisenden können ihre persönlichen Reiseberichte aus ihrem Tagebuch freiwillig als Travel Story teilen. Sobald ein Bericht öffentlich geteilt wird, erscheint er hier.
+                {invalidCount > 0 ? "Die vorhandenen öffentlichen Einträge sind unvollständig. Bitte versuche es später erneut." : "Hier findest du künftig freiwillig veröffentlichte Reiseberichte. Aktuell sind noch keine öffentlichen Stories vorhanden."}
               </p>
-              <div className="mt-6 flex justify-center gap-3">
+              <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
                 <Button asChild variant="outline">
-                  <Link href="/reiseberichte">Zum eigenen Reisetagebuch</Link>
+                  <Link href="/travel-assistant">Reiseassistent ausprobieren</Link>
                 </Button>
                 <Button asChild>
                   <Link href="/mentors">Local Mentoren finden</Link>

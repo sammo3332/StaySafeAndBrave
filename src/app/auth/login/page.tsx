@@ -120,10 +120,10 @@ function LoginFormContent() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-15rem)] py-12">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-15rem)] px-5 py-12">
       <div className="flex items-center gap-2 mb-8">
         <HeartHandshake className="h-10 w-10 text-primary" />
-        <span className="text-3xl font-bold text-primary">Stay Safe &amp; Brave</span>
+        <span className="text-2xl font-semibold text-foreground">Stay Safe &amp; Brave</span>
       </div>
       
       <Tabs defaultValue="login" className="w-full max-w-md">
@@ -139,7 +139,7 @@ function LoginFormContent() {
         </TabsList>
 
         <TabsContent value="login">
-          <Card className="shadow-xl">
+          <Card className="shadow-sm">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Willkommen zurück!</CardTitle>
               <CardDescription>Melde dich an, um deine Abenteuer zu planen.</CardDescription>
@@ -154,7 +154,7 @@ function LoginFormContent() {
                       <FormItem>
                         <FormLabel>E-Mail Adresse</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="deine.email@beispiel.de" {...field} />
+                          <Input autoComplete="email" type="email" placeholder="deine.email@beispiel.de" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -167,7 +167,7 @@ function LoginFormContent() {
                       <FormItem>
                         <FormLabel>Passwort</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Dein sicheres Passwort" {...field} />
+                          <Input autoComplete="current-password" type="password" placeholder="Dein Passwort" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -183,10 +183,10 @@ function LoginFormContent() {
         </TabsContent>
 
         <TabsContent value="register">
-          <Card className="shadow-xl">
+          <Card className="shadow-sm">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Tritt der Community bei</CardTitle>
-              <CardDescription>Erstelle ein Konto, um deine Reise sicher zu gestalten.</CardDescription>
+              <CardDescription>Behalte Anfragen, Nachrichten und dein Tagebuch an einem Ort.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...registerForm}>
@@ -211,7 +211,7 @@ function LoginFormContent() {
                       <FormItem>
                         <FormLabel>E-Mail Adresse</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="deine.email@beispiel.de" {...field} />
+                          <Input autoComplete="email" type="email" placeholder="deine.email@beispiel.de" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -224,7 +224,7 @@ function LoginFormContent() {
                       <FormItem>
                         <FormLabel>Passwort</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Wähle ein sicheres Passwort" {...field} />
+                          <Input autoComplete="new-password" type="password" placeholder="Mindestens 8 Zeichen" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -237,7 +237,7 @@ function LoginFormContent() {
                       <FormItem>
                         <FormLabel>Passwort bestätigen</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Passwort erneut eingeben" {...field} />
+                          <Input autoComplete="new-password" type="password" placeholder="Passwort erneut eingeben" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

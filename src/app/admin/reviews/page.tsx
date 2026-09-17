@@ -123,9 +123,7 @@ export default function AdminReviewsPage() {
             Integrität &amp; Unveränderlichkeit:
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            Bewertungen stammen direkt von Reisenden mit einer abgeschlossenen Buchung (1:1 Dokument-ID-Kopplung
-            <code className="bg-background px-1 py-0.5 rounded border text-foreground ml-1">reviewId === bookingId</code>).
-            Zur Sicherstellung absoluter Transparenz und Verfälschungssicherheit sind Bewertungen für Administratoren strikt schreibgeschützt (Read-Only).
+            Bewertungen gehören jeweils zu einer Buchung und können hier eingesehen werden. In dieser Ansicht ist keine Bearbeitung von Bewertungen möglich.
           </p>
         </div>
       </div>

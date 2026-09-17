@@ -13,7 +13,7 @@ export default function MessagesLoading() {
         <Skeleton className="h-10 w-40" />
       </div>
 
-      <Card className="shadow-md">
+      <Card className="shadow-sm">
         <CardHeader className="space-y-2">
           <Skeleton className="h-8 w-44" />
         </CardHeader>

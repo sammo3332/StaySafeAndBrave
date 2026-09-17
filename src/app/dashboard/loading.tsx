@@ -13,7 +13,7 @@ export default function DashboardLoading() {
       </div>
 
       {/* User Profile Quick View Skeleton */}
-      <Card className="shadow-md overflow-hidden">
+      <Card className="shadow-sm overflow-hidden">
         <CardHeader className="bg-muted/30 p-6 flex flex-col md:flex-row items-center gap-6">
           <Skeleton className="h-24 w-24 rounded-full" /> {/* Avatar */}
           <div className="space-y-2 text-center md:text-left">
@@ -27,7 +27,7 @@ export default function DashboardLoading() {
       {/* Quick Actions / Overview Skeletons */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(3)].map((_, index) => (
-          <Card key={index} className="shadow-lg">
+          <Card key={index} className="shadow-sm">
             <CardHeader className="space-y-2">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-7 w-32" /> {/* Card Title */}
@@ -45,7 +45,7 @@ export default function DashboardLoading() {
       </div>
 
       {/* AI Travel Assistant Teaser Skeleton */}
-      <Card className="bg-secondary/10 border-secondary/30 shadow-md">
+      <Card className="bg-secondary/10 border-secondary/30 shadow-sm">
         <CardHeader className="space-y-2">
           <Skeleton className="h-7 w-1/2" /> {/* Title */}
           <Skeleton className="h-4 w-full" /> {/* Description Line 1 */}

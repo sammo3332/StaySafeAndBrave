@@ -2,7 +2,8 @@
 
 import { use, useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { ContentImage } from '@/components/ui/content-image';
 import { useRouter } from "next/navigation";
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase } from "@/firebase";
 import {
@@ -105,9 +106,7 @@ export default function ConversationDetailPage({ params }: PageProps) {
   } = useCollection<MessageDTO>(messagesQuery);
 
   // Scroll to bottom when messages update
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages?.length]);
+  const {logRef,onScroll,hasNew,scrollToLatest}=useChatScroll(messages?.length);
 
   // Format message time
   const formatTime = (val: any) => {
@@ -255,11 +254,10 @@ export default function ConversationDetailPage({ params }: PageProps) {
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="relative w-11 h-11 rounded-full border overflow-hidden bg-muted shrink-0">
             {mentor?.profilePictureUrl ? (
-              <Image
+              <ContentImage
                 src={mentor.profilePictureUrl}
                 alt={mentor.firstName || mentorDisplayName}
-                fill
-                className="object-cover"
+                className="h-full w-full object-cover"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center font-semibold text-muted-foreground">
@@ -329,7 +327,7 @@ export default function ConversationDetailPage({ params }: PageProps) {
       {/* Messages Container */}
       <Card className="shadow-sm border">
         <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col space-y-4 min-h-[360px] max-h-[520px] overflow-y-auto pr-1">
+          <div ref={logRef} onScroll={onScroll} role="log" aria-label="Nachrichtenverlauf" className="chat-log flex flex-col space-y-4 pr-1">
             {isMessagesLoading ? (
               <div className="flex flex-col items-center justify-center flex-1 py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-primary mb-2" />
@@ -349,8 +347,8 @@ export default function ConversationDetailPage({ params }: PageProps) {
                     <div
                       className={`max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
                         isMe
-                          ? "bg-primary text-primary-foreground rounded-br-xs"
-                          : "bg-muted text-foreground rounded-bl-xs border"
+                          ? "bg-primary text-primary-foreground rounded-br-sm"
+                          : "bg-muted text-foreground rounded-bl-sm border"
                       }`}
                     >
                       <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.text}</p>
@@ -385,14 +383,15 @@ export default function ConversationDetailPage({ params }: PageProps) {
           )}
 
           {/* Message Input Form */}
-          <form onSubmit={handleSendMessage} className="mt-4 pt-3 border-t flex gap-2">
-            <Textarea
+          {hasNew && <Button onClick={scrollToLatest} variant="outline" className="mt-3">Neue Nachrichten ansehen ↓</Button>}
+          <form onSubmit={handleSendMessage} className="chat-composer mt-4 pt-3 border-t flex gap-2">
+            <Textarea aria-label="Nachricht schreiben"
               value={messageText}
               onChange={(e) => setMessageText(e.target.value)}
               placeholder={`Nachricht an ${mentorDisplayName} schreiben...`}
               rows={2}
               maxLength={2000}
-              className="resize-none text-sm min-h-[50px] max-h-[120px]"
+              className="resize-none text-base min-h-[50px] max-h-[120px]"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();

@@ -12,7 +12,7 @@ export default function ReiseberichteLoading() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {[...Array(3)].map((_, index) => (
-          <Card key={index} className="flex flex-col overflow-hidden rounded-lg shadow-lg">
+          <Card key={index} className="flex flex-col overflow-hidden rounded-lg shadow-sm">
             <Skeleton className="h-56 w-full" /> {/* Image */}
             <CardHeader className="space-y-2">
               <Skeleton className="h-6 w-5/6" /> {/* Report Title */}

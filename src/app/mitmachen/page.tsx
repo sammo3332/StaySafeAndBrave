@@ -1,0 +1,3 @@
+import { EngagementForm } from '@/components/product/engagement-form';
+export const metadata={title:'Mitmachen · Mentor werden & Newsletter'};
+export default function Page(){return <div className="page-shell py-12"><p className="eyebrow mb-4">Mitmachen</p><h1 className="editorial-title page-title">Local Mentor werden.<br/>Neuigkeiten erhalten.</h1><p className="my-6 max-w-2xl text-lg text-muted-foreground">Lerne den Bewerbungs- und Newsletter-Ablauf kennen. Beide Formulare starten im Demo-Modus. Der echte Versand wird separat freigeschaltet.</p><div className="mt-9 grid items-start gap-6 lg:grid-cols-2"><EngagementForm kind="mentor"/><EngagementForm kind="newsletter"/></div></div>;}
