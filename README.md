@@ -116,7 +116,7 @@ In particular:
 
 ## Verification
 
-The repository contains automated workflow tests and separate TypeScript checking. The project documentation records successful workflow tests and build/typecheck checks for the documented development state while also listing the browser/provider checks that remain outside those automated validations.
+The repository contains automated workflow tests and separate TypeScript checking. For the documented expansion state, **23 workflow tests passed**, the separate TypeScript check passed, and the production build completed with **72 static pages**. These checks did not include full rendered browser interaction or external provider end-to-end operation.
 
 Useful technical documentation:
 
